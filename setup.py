@@ -890,7 +890,7 @@ def choose_action(root):
     dlg.title("LeafyGreen")
     dlg.configure(bg=lg.BG)
     dlg.resizable(False, False)
-    dlg.grab_set()
+    dlg.transient(root)
     choice = {"v": None}
     ttk.Label(dlg, text="LeafyGreen is already installed.",
               style="H1.TLabel").pack(anchor="w", padx=20, pady=(18, 4))
@@ -910,6 +910,12 @@ def choose_action(root):
     ttk.Button(bar, text="Cancel",
                command=lambda: pick(None)).pack(side="right")
     dlg.update_idletasks()
+    try:                                  # grab only once it is on screen
+        dlg.wait_visibility()
+        dlg.grab_set()
+    except tk.TclError:
+        pass
+    dlg.protocol("WM_DELETE_WINDOW", lambda: pick(None))
     dlg.wait_window()
     return choice["v"]
 
