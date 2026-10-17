@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """LeafyGreen - all-in-one installer and setup.
 
 This single file does everything. Double-click it (or run  py setup.py ).
@@ -37,6 +36,7 @@ STEPS = ("1  Activation", "2  Screen Time", "3  Websites & Apps",
 def fail_early(text):
     root = tk.Tk()
     root.withdraw()
+    # Notify
     messagebox.showerror("LeafyGreen Setup", text)
     root.destroy()
     sys.exit(1)
@@ -100,7 +100,7 @@ class Backend:
                 with open(answer, encoding="utf-8") as f:
                     return json.load(f)
             except (OSError, ValueError):
-                pass                          # not there yet
+                pass
             if pump:
                 pump()
             time.sleep(0.2)
@@ -118,18 +118,17 @@ class SetupApp(tk.Tk):
         self.minsize(900, 700)
         lg.apply_style(self)
 
-        # what the person chooses (written to disk only at the very end)
-        self.allowed = []                  # [name, "App"/"Website", date]
+        self.allowed = []
         self.blocked = []
-        self.limited = []                  # {"name", "limit", "used_sec"}
-        self.accounts = []                 # (username, password, role)
-        self.reached = 0                   # furthest step unlocked
+        self.limited = []
+        self.accounts = []
+        self.reached = 0
         self.backend = Backend()
-        self.current_pin = ""              # proven PIN when running again
+        self.current_pin = ""
         self.finished = False
 
         self._build_header()
-        self.header_end = ttk.Frame(self, height=1)   # keeps pack order
+        self.header_end = ttk.Frame(self, height=1)
         self.header_end.pack(fill="x")
         self._build_nav()
         self.nb = ttk.Notebook(self)
@@ -147,9 +146,6 @@ class SetupApp(tk.Tk):
         self._update_tabs()
         self.bind("<Return>", self._return_key)
 
-    # ------------------------------------------------------------------
-    # frame: header and the Previous / Next bar
-    # ------------------------------------------------------------------
     def _build_header(self):
         header = tk.Frame(self, bg=lg.NAVY)
         header.pack(fill="x")
@@ -181,9 +177,6 @@ class SetupApp(tk.Tk):
             if self.nb.index("current") == 0:
                 self.next()
 
-    # ------------------------------------------------------------------
-    # moving between steps
-    # ------------------------------------------------------------------
     def current(self):
         return self.nb.index("current")
 
@@ -223,9 +216,6 @@ class SetupApp(tk.Tk):
         return (self._check_key, self._check_screen_time, lambda: True,
                 lambda: True, self._check_accounts)[i]()
 
-    # ------------------------------------------------------------------
-    # little building blocks
-    # ------------------------------------------------------------------
     @staticmethod
     def _title(parent, text, sub):
         ttk.Label(parent, text=text, style="H1.TLabel").pack(anchor="w")
@@ -246,9 +236,6 @@ class SetupApp(tk.Tk):
                  fg=lg.GREEN, font=(lg.FONT, 10, "bold")).pack(
             side="left", pady=8)
 
-    # ------------------------------------------------------------------
-    # step 1: activation key
-    # ------------------------------------------------------------------
     def _step_activation(self, f):
         self._title(f, "Activation", "Type the activation key you were "
                     "given. LeafyGreen can't be used without it.")
@@ -271,9 +258,6 @@ class SetupApp(tk.Tk):
         self.after(200, self.key_entry.focus_set)
 
     def _check_key(self):
-        # The real check (is the key in the key list and not expired?) is made
-        # by LeafyGreen when setup finishes. Here we only make sure something
-        # was typed, so a wrong key is reported once, at the end.
         if self.key_var.get().strip():
             self.key_label.configure(fg=lg.GREEN)
             self.key_msg.set("\u2713 Key entered")
@@ -283,9 +267,6 @@ class SetupApp(tk.Tk):
         self.key_entry.focus_set()
         return False
 
-    # ------------------------------------------------------------------
-    # step 2: screen time and bedtime
-    # ------------------------------------------------------------------
     def _step_screen_time(self, f):
         self._title(f, "Daily screen time and bedtime", "How much screen "
                     "time is allowed each day, and when the computer should "
@@ -363,16 +344,19 @@ class SetupApp(tk.Tk):
             try:
                 h, m = int(hours.get()), int(mins.get())
             except ValueError:
+                # Notify
                 messagebox.showerror("LeafyGreen Setup",
                                      f"Enter whole numbers for {day}.")
                 return False
             if not (0 <= h <= 24 and 0 <= m <= 59) or h * 60 + m > 1440:
+                # Notify
                 messagebox.showerror("LeafyGreen Setup", f"The limit for "
                                      f"{day} must be 24 hours or less.")
                 return False
             limits[day] = {"enabled": enabled.get(), "minutes": h * 60 + m}
         start, end = self.bed_start.get().strip(), self.bed_end.get().strip()
         if not (lg.TIME_RE.match(start) and lg.TIME_RE.match(end)):
+            # Notify
             messagebox.showerror("LeafyGreen Setup", "Bedtime times must "
                                  "look like 21:00 (HH:MM, 24-hour).")
             return False
@@ -381,9 +365,6 @@ class SetupApp(tk.Tk):
                         "end": end}
         return True
 
-    # ------------------------------------------------------------------
-    # step 3: Always Allowed / Always Blocked
-    # ------------------------------------------------------------------
     def _step_lists(self, f):
         self._title(f, "Websites and apps", "Choose what is always allowed "
                     "and what is always blocked. Anything you don't list is "
@@ -431,6 +412,7 @@ class SetupApp(tk.Tk):
             if kind.get() == "Website":
                 site = lg.normalize_site_name(text)
                 if site is None:
+                    # Notify
                     messagebox.showwarning(
                         "LeafyGreen Setup", "That doesn't look like a "
                         "website address. Type something like example.com "
@@ -443,15 +425,18 @@ class SetupApp(tk.Tk):
                 return
             low = text.lower()
             if any(r[0].lower() == low for r in items):
+                # Notify
                 messagebox.showinfo("LeafyGreen Setup",
                                     f"'{text}' is already in this list.")
                 return
             if any(r[0].lower() == low for r in other):
+                # Notify
                 messagebox.showwarning(
                     "LeafyGreen Setup", f"'{text}' is already in "
                     f"{other_title}. Remove it there first.")
                 return
             if kind.get() == "App" and self._protected(text):
+                # Notify
                 messagebox.showwarning(
                     "LeafyGreen Setup", f"'{text}' is needed by Windows or "
                     "by LeafyGreen itself, so it can't be listed.")
@@ -483,9 +468,6 @@ class SetupApp(tk.Tk):
         return (low in lg.PROTECTED_APP_NAMES
                 or low in lg.CRITICAL_PROCESSES)
 
-    # ------------------------------------------------------------------
-    # step 4: limited apps
-    # ------------------------------------------------------------------
     def _step_limited(self, f):
         self._title(f, "Limited apps", "Give specific apps their own daily "
                     "time limit. Time counts while the app is running; when "
@@ -528,6 +510,7 @@ class SetupApp(tk.Tk):
     def _add_limited(self):
         name = lg.normalize_app_name(self.lim_name.get().strip())
         if not name:
+            # Notify
             messagebox.showinfo("LeafyGreen Setup", "Enter an app name.")
             return
         try:
@@ -535,26 +518,31 @@ class SetupApp(tk.Tk):
         except ValueError:
             minutes = 0
         if not 1 <= minutes <= 1440:
+            # Notify
             messagebox.showerror("LeafyGreen Setup", "Enter a limit between "
                                  "1 and 1440 minutes.")
             return
         low = name.lower()
         if self._protected(name):
+            # Notify
             messagebox.showwarning(
                 "LeafyGreen Setup", f"'{name}' is needed by Windows or by "
                 "LeafyGreen itself, so it can't be limited.")
             return
         if any(a["name"].lower() == low for a in self.limited):
+            # Notify
             messagebox.showinfo("LeafyGreen Setup",
                                 f"'{name}' already has a limit.")
             return
         if any(r[0].lower() == low for r in self.allowed):
+            # Notify
             messagebox.showwarning(
                 "LeafyGreen Setup", f"'{name}' is on your Always Allowed "
                 "list, and allowed apps are never limited. Remove it from "
                 "that list in step 3 first.")
             return
         if any(r[0].lower() == low for r in self.blocked):
+            # Notify
             messagebox.showwarning(
                 "LeafyGreen Setup", f"'{name}' is on your Always Blocked "
                 "list, so it can't be opened at all.")
@@ -570,9 +558,6 @@ class SetupApp(tk.Tk):
             del self.limited[i]
         self._refresh_limited()
 
-    # ------------------------------------------------------------------
-    # step 5: accounts and the PIN
-    # ------------------------------------------------------------------
     def _step_accounts(self, f):
         self._title(f, "Accounts and PIN", "Accounts sign in to the Web "
                     "Dashboard from another computer. The PIN is for this "
@@ -669,26 +654,26 @@ class SetupApp(tk.Tk):
     def _check_accounts(self):
         roles = [a[2] for a in self.accounts]
         if "Complete" not in roles or "Child" not in roles:
+            # Notify
             messagebox.showwarning(
                 "LeafyGreen Setup", "Add at least one Complete account and "
                 "one Child account (three accounts at most).")
             return False
         pin, again = self.pin1.get(), self.pin2.get()
         if len(pin) != 4 or not pin.isdigit():
+            # Notify
             messagebox.showwarning("LeafyGreen Setup",
                                    "Enter a 4-digit PIN.")
             self.pin1.focus_first()
             return False
         if pin != again:
+            # Notify
             messagebox.showwarning("LeafyGreen Setup",
                                    "The two PINs don't match.")
             self.pin2.clear()
             return False
         return True
 
-    # ------------------------------------------------------------------
-    # the PIN (only when LeafyGreen was already set up) and finishing
-    # ------------------------------------------------------------------
     def _pin_error(self, pin):
         """Asks LeafyGreen whether this PIN is right. Error text or None."""
         answer = self._send({"type": "check_pin", "pin": pin})
@@ -711,6 +696,7 @@ class SetupApp(tk.Tk):
         if not self.require_pin():
             self.destroy()
             return
+        # Notify
         if not messagebox.askyesno(
                 "LeafyGreen Setup", "LeafyGreen is already set up.\n\n"
                 "Running setup again replaces the PIN, accounts, time limits "
@@ -744,7 +730,7 @@ class SetupApp(tk.Tk):
         payload = {"type": "setup", "key": self.key_var.get().strip(),
                    "pin": self.current_pin, "config": self.config()}
         answer = self._send(payload)
-        while answer.get("code") == "pin":        # it was set up before
+        while answer.get("code") == "pin":
             dlg = lg.PinDialog(self, "Enter PIN",
                                ["Enter the PIN to run setup again"],
                                lambda v: self._pin_error(v[0]))
@@ -759,6 +745,7 @@ class SetupApp(tk.Tk):
         if answer.get("code") == "write":
             message += ("\n\nIf LeafyGreen is installed, run install.bat "
                         "again and then try setup again.")
+        # Notify
         messagebox.showerror("LeafyGreen Setup", message)
         if answer.get("code") == "key":
             self.nb.select(0)
@@ -788,6 +775,7 @@ class SetupApp(tk.Tk):
             side="left", padx=6)
 
     def restart_now(self):
+        # Notify
         if not messagebox.askyesno("LeafyGreen Setup", "Restart this "
                                    "computer in 30 seconds?"):
             return
@@ -795,6 +783,7 @@ class SetupApp(tk.Tk):
             subprocess.run(["shutdown", "/r", "/t", "30", "/c",
                             "LeafyGreen setup is complete."], check=False)
         except OSError as exc:
+            # Notify
             messagebox.showerror("LeafyGreen Setup",
                                  f"Could not restart: {exc}")
 
@@ -802,10 +791,6 @@ class SetupApp(tk.Tk):
 APPNAME = "LeafyGreen"
 
 
-# ----------------------------------------------------------------------------
-# Running as the all-in-one installer (admin steps shell out to install.bat /
-# uninstall.bat, which hold the tested Windows commands).
-# ----------------------------------------------------------------------------
 def _program_files():
     return (os.environ.get("ProgramW6432") or os.environ.get("ProgramFiles")
             or r"C:\Program Files")
@@ -874,8 +859,9 @@ def ask_child_name(root):
             exists = subprocess.run(["net", "user", name],
                                     capture_output=True).returncode == 0
         except OSError:
-            exists = True            # let install.bat make the final call
+            exists = True
         if not exists:
+            # Notify
             messagebox.showerror(
                 "LeafyGreen", f"There is no account called '{name}' on this "
                 "computer. Check the name and try again.", parent=root)
@@ -910,7 +896,7 @@ def choose_action(root):
     ttk.Button(bar, text="Cancel",
                command=lambda: pick(None)).pack(side="right")
     dlg.update_idletasks()
-    try:                                  # grab only once it is on screen
+    try:
         dlg.wait_visibility()
         dlg.grab_set()
     except tk.TclError:
@@ -940,7 +926,7 @@ def do_install(root):
     kid = ask_child_name(root)
     if not kid:
         return False
-    root.destroy()                        # free the Tk root before the build
+    root.destroy()
     ok = run_batch("install.bat", {"LG_KID": kid})
     if not ok:
         fail_early("The install did not finish. Read the messages in the "
@@ -949,19 +935,23 @@ def do_install(root):
 
 
 def do_uninstall(root):
+    # Notify
     if not messagebox.askyesno(
             "LeafyGreen", "Remove LeafyGreen from this computer?\n\nThe "
             "child's apps and time limits will no longer be controlled.",
             icon="warning", default="no", parent=root):
         return
+    # Notify
     purge = messagebox.askyesno(
         "LeafyGreen", "Also delete the saved settings and PIN?",
         default="no", parent=root)
     ok = run_batch("uninstall.bat", {"LG_PURGE": "y" if purge else "n"})
     if ok:
+        # Notify
         messagebox.showinfo("LeafyGreen", "LeafyGreen has been removed.",
                             parent=root)
     else:
+        # Notify
         messagebox.showerror("LeafyGreen", "The uninstall did not finish. "
                              "Try running uninstall.bat as administrator.",
                              parent=root)
@@ -970,23 +960,20 @@ def do_uninstall(root):
 def run_wizard(require_gate):
     app = SetupApp()
     if require_gate:
-        app.after(150, app.gate)          # running again: the PIN first
+        app.after(150, app.gate)
     app.mainloop()
 
 
 def main():
-    # On Windows the installer/uninstaller steps need administrator rights,
-    # so ask for them up front. (Elsewhere this just runs the wizard, for
-    # previewing the screens.)
     if sys.platform == "win32" and not is_admin():
         if not elevate():
             fail_early("LeafyGreen needs administrator rights. Right-click "
                        "setup.py and choose 'Run as administrator'.")
-        return                            # the elevated copy takes over
+        return
 
     if sys.platform == "win32" and not is_installed():
         root = _mini_root()
-        if do_install(root):              # root is destroyed inside on success
+        if do_install(root):
             run_wizard(require_gate=False)
         return
 
@@ -1003,7 +990,6 @@ def main():
             run_wizard(require_gate=True)
         return
 
-    # Installed (or a non-Windows preview) but not set up yet: go straight in.
     run_wizard(require_gate=False)
 
 

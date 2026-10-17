@@ -47,43 +47,37 @@ APP_NAME = "LeafyGreen"
 APP_SUBTITLE = "Parental Controls"
 APP_VERSION = "v2.3 (release)"
 
-UNLOCK_SECONDS = 300   # how long a correct PIN keeps changes unlocked
-MAX_TRIES = 5          # wrong PINs allowed before a short lockout
+UNLOCK_SECONDS = 300
+MAX_TRIES = 5
 LOCKOUT_SECONDS = 30
-GUARD_INTERVAL_MS = 250   # how often running apps are checked
-ACTIVE_WITHIN_SECONDS = 120   # screen time counts while input is this recent
-COUNTER_SAVE_SECONDS = 60     # time counters are saved this often
-WEB_ENABLED = True        # Web Dashboard at http://THIS-PC-IP:WEB_PORT
+GUARD_INTERVAL_MS = 250
+ACTIVE_WITHIN_SECONDS = 120
+COUNTER_SAVE_SECONDS = 60
+WEB_ENABLED = True
 WEB_PORT = 8765
-LOG_LIMIT = 1000          # activity log lines kept
-GRACE_MINUTES_PER_DAY = 3     # "One More Minute" can be used this often a day
-EXPIRY_GRACE_DAYS = 5         # protection stays on this long after expiry
-COUNTDOWN_SECONDS = 60    # the countdown window opens this long before the end
-NOTICE_IDLE_SECONDS = 45  # results are shown to the child once they are at the PC
+LOG_LIMIT = 1000
+GRACE_MINUTES_PER_DAY = 3
+EXPIRY_GRACE_DAYS = 5
+COUNTDOWN_SECONDS = 60
+NOTICE_IDLE_SECONDS = 45
 MAX_PENDING_REQUESTS = 10
-REQUEST_KEEP = 60         # finished requests kept
+REQUEST_KEEP = 60
 
-# --------------------------------------------------------------------------
-# Style
-# --------------------------------------------------------------------------
 FONT = "Segoe UI"
 
-# Colour scheme: deep forest green for the header, a clean emerald accent,
-# and a soft grey-green page with white cards. The old names are kept so the
-# rest of the file did not have to change.
-OLIVE = "#1b4d36"             # forest green (header, headings)
+OLIVE = "#1b4d36"
 OLIVE_DARK = "#12382a"
-LIME = "#1f8a5b"              # emerald (main buttons)
+LIME = "#1f8a5b"
 LIME_DARK = "#17704a"
-MINT = "#f2f6f3"              # page background
-NAVY = OLIVE                  # header, headings, table headings
+MINT = "#f2f6f3"
+NAVY = OLIVE
 NAVY_DARK = OLIVE_DARK
-ACCENT = LIME                 # main buttons
-ACCENT_FG = "#ffffff"         # text on the emerald buttons
+ACCENT = LIME
+ACCENT_FG = "#ffffff"
 ACCENT_LIGHT = "#6fc79c"
-BG = MINT                     # window background
+BG = MINT
 BORDER = "#d3dfd8"
-BLUE_BG = "#ffffff"           # ordinary button face
+BLUE_BG = "#ffffff"
 BUTTON_HOVER = "#e7f1eb"
 TEXT = "#1d2b24"
 MUTED = "#617268"
@@ -104,7 +98,6 @@ def apply_style(root):
                 bordercolor=BORDER, lightcolor=BG, darkcolor=BG,
                 troughcolor=BG)
 
-    # Frames
     s.configure("TFrame", background=BG)
     s.configure("Header.TFrame", background=NAVY)
     s.configure("Card.TFrame", background="white", relief="solid",
@@ -112,7 +105,6 @@ def apply_style(root):
                 darkcolor=BORDER)
     s.configure("Inner.TFrame", background="white")
 
-    # Labels
     s.configure("TLabel", background=BG, foreground=TEXT)
     s.configure("Title.TLabel", background=NAVY, foreground="white",
                 font=(FONT, 20, "bold"))
@@ -131,7 +123,6 @@ def apply_style(root):
     s.configure("Status.TLabel", background="white", foreground=MUTED,
                 padding=(14, 6))
 
-    # Buttons
     s.configure("TButton", padding=(14, 6), background=BLUE_BG,
                 foreground=NAVY, bordercolor=BORDER, focusthickness=0,
                 relief="flat")
@@ -149,7 +140,6 @@ def apply_style(root):
           background=[("active", RED_DARK), ("pressed", RED_DARK)],
           foreground=[("active", "white")])
 
-    # Check buttons
     s.configure("TCheckbutton", background=BG, indicatorbackground="white")
     s.map("TCheckbutton", background=[("active", BG)])
     s.configure("Card.TRadiobutton", background="white")
@@ -161,7 +151,6 @@ def apply_style(root):
                 indicatorbackground="white")
     s.map("Card.TCheckbutton", background=[("active", "white")])
 
-    # Inputs
     s.configure("TEntry", fieldbackground="white", padding=5,
                 bordercolor=BORDER)
     s.configure("TCombobox", fieldbackground="white", padding=4,
@@ -170,7 +159,6 @@ def apply_style(root):
     s.configure("TSpinbox", fieldbackground="white", padding=4,
                 arrowcolor=NAVY, bordercolor=BORDER)
 
-    # Notebook tabs
     s.configure("TNotebook", background=BG, borderwidth=0,
                 tabmargins=(0, 4, 0, 0))
     s.configure("TNotebook.Tab", padding=(18, 8), background="#e3ebe6",
@@ -180,7 +168,6 @@ def apply_style(root):
           foreground=[("selected", NAVY_DARK)],
           expand=[("selected", (0, 0, 0, 2))])
 
-    # Tables
     s.configure("Treeview", background="white", fieldbackground="white",
                 foreground=TEXT, rowheight=28, bordercolor=BORDER,
                 borderwidth=1, font=(FONT, 10))
@@ -195,12 +182,9 @@ def apply_style(root):
                 bordercolor=BG, arrowcolor=NAVY)
 
 
-CHILD_USER = None          # set from --child (the launcher passes it)
+CHILD_USER = None
 
 
-# --------------------------------------------------------------------------
-# Helpers
-# --------------------------------------------------------------------------
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
         "Sunday"]
 WEEKDAYS = DAYS[:5]
@@ -380,9 +364,9 @@ def normalize_site_name(text):
     if not t or any(ch.isspace() or ord(ch) < 32 for ch in t):
         return None
     t = re.sub(r"^[a-z][a-z0-9+.-]*://", "", t)
-    t = re.split(r"[/?#]", t, maxsplit=1)[0]          # drop path / query
-    t = t.rsplit("@", 1)[-1]                          # drop user info
-    t = re.sub(r":\d+$", "", t)                       # drop :port
+    t = re.split(r"[/?#]", t, maxsplit=1)[0]
+    t = t.rsplit("@", 1)[-1]
+    t = re.sub(r":\d+$", "", t)
     t = t.strip(".")
     if t.startswith("www."):
         t = t[4:]
@@ -438,7 +422,7 @@ def enable_drag_select(tree):
 
     def press(event):
         on_row = tree.identify_region(event.x, event.y) in ("cell", "tree")
-        plain = not (event.state & 0x0005)            # no Shift / Ctrl held
+        plain = not (event.state & 0x0005)
         state["anchor"] = tree.identify_row(event.y) if on_row and plain \
             else None
 
@@ -446,17 +430,17 @@ def enable_drag_select(tree):
         if not state["anchor"]:
             return None
         y, height = event.y, tree.winfo_height()
-        if y < 0:                                     # dragged above: scroll
+        if y < 0:
             tree.yview_scroll(-1, "units")
             y = 1
-        elif y > height:                              # dragged below: scroll
+        elif y > height:
             tree.yview_scroll(1, "units")
             y = height - 1
         row = tree.identify_row(y)
         if row:
             tree.selection_set(rows_between(
                 list(tree.get_children()), state["anchor"], row))
-        return "break"                                # no column resizing
+        return "break"
 
     def select_all(_event):
         tree.selection_set(tree.get_children())
@@ -468,16 +452,11 @@ def enable_drag_select(tree):
     tree.bind("<Control-A>", select_all)
 
 
-# --------------------------------------------------------------------------
-# In-memory data (placeholder until real storage is added)
-# --------------------------------------------------------------------------
 def default_limits():
     return {d: {"enabled": True, "minutes": 120 if d in WEEKDAYS else 180}
             for d in DAYS}
 
 
-# "Screen time left" alerts: up to three, each this many minutes before
-# the time limit (or bedtime). Children may change them.
 ALERT_CHOICES = (1, 2, 3, 5, 10, 15, 20, 30)
 MAX_ALERTS = 3
 DEFAULT_ALERTS = [10]
@@ -511,12 +490,9 @@ def describe_alerts(alerts):
             else ", ".join(names[:-1]) + " and " + names[-1])
     return f"Alerts at {text} minute(s) before time runs out."
 
-# The buttons under Quick Actions. They are fixed.
 QUICK_CHOICES = (("pause", "Pause Internet"), ("coupon", "Add New Coupon"),
                  ("requests", "Review Requests"))
 DEFAULT_QUICK = [key for key, _ in QUICK_CHOICES]
-# What a child can ask for.
-# Web Dashboard roles
 ROLES = ("Lite", "Complete", "Child")
 ROLE_HELP = {
     "Lite": "Can review requests (approve or deny) and make new coupons.",
@@ -562,53 +538,43 @@ class Data:
     def __init__(self):
         self.pin_salt = os.urandom(8).hex()
         self.pin_hash = None
-        self.pin_plain = None             # shown on the My Account tab for resets
-        self.parents = []                 # up to 4 Web Dashboard accounts
+        self.pin_plain = None
+        self.parents = []
         self.protection_enabled = True
-        self.internet_paused = False      # not saved
-        self.pause_until = 0.0            # not saved; time.time() when a timed
-                                          # pause ends (0 = until resumed)
-        self.grace_used = 0               # "One More Minute" used today
+        self.internet_paused = False
+        self.pause_until = 0.0
+        self.grace_used = 0
         self.quick_actions = list(DEFAULT_QUICK)
-        # {"id","kind","detail","minutes","note","created","status","told"}
         self.requests = []
         self.bonus_min = 0
         self.used_today_sec = 0.0
         self.usage_date = ""
-        self.baseline_done = False        # first scan of running apps done
+        self.baseline_done = False
 
         self.limits = default_limits()
         self.bedtime = {"enabled": True, "start": "21:00", "end": "07:00"}
         self.warn_alerts = list(DEFAULT_ALERTS)
 
-        # [name, "App" or "Website", date added]
         self.blocked = []
         self.allowed = []
-        # SmartSafe's own lists, in the same [name, "Website", date] shape
         self.smart_denied = []
         self.smart_approved = []
-        self.smartsafe_enabled = True     # the Dashboard slide switch
-        self.setup_done = False           # set by setup.py when it finishes
-        # Subscription: the key's end date ("YYYY-MM-DD"; "" means no end
-        # date), how many days before that the "expiring soon" banner starts,
-        # and a record of each key that has been activated.
+        self.smartsafe_enabled = True
+        self.setup_done = False
         self.expiry = ""
         self.expiry_warn_days = 14
-        self.key_log = []                 # [{"key", "expiry", "recorded"}]
-        self.hidden = []                  # lowercase names tucked away on the
-                                          # Always Allowed page (still allowed)
-        # {"name", "limit" (minutes), "used_sec"}
+        self.key_log = []
+        self.hidden = []
         self.limited = []
         self.coupons = []
-        self.activity = []                # (time, event, target, result)
+        self.activity = []
         self.load_error = None
-        self.unreadable = None            # settings exist but can't be opened
+        self.unreadable = None
 
     @property
     def used_today_min(self):
         return int(self.used_today_sec // 60)
 
-    # -- subscription --------------------------------------------------------
     def days_left(self, today=None):
         """Whole days until the subscription expires, or None if no end date
         is set. 0 on the last day; negative once it has expired."""
@@ -650,7 +616,6 @@ class Data:
             return None
         return EXPIRY_GRACE_DAYS + 1 + left
 
-    # -- activation keys (the editable key list, Ctrl+Shift+A) ---------------
     @staticmethod
     def _key_norm(key):
         return str(key or "").strip().upper()
@@ -694,7 +659,7 @@ class Data:
         ok, expiry, error = self.validate_activation(key)
         if not ok:
             return False, error
-        if self.key_entry(key) is None:          # built-in key: record it
+        if self.key_entry(key) is None:
             self.key_log.append({"key": self._key_norm(key), "expiry": expiry,
                                   "recorded": today_str()})
             self.key_log = self.key_log[-50:]
@@ -717,7 +682,6 @@ class Data:
         self.key_log = clean[-50:]
         write_activation_keyfile(self.key_log)
 
-    # -- PIN ----------------------------------------------------------------
     def _hash(self, pin):
         return hashlib.sha256((self.pin_salt + pin).encode()).hexdigest()
 
@@ -728,10 +692,9 @@ class Data:
     def check_pin(self, pin):
         ok = self.pin_hash is not None and self._hash(pin) == self.pin_hash
         if ok and self.pin_plain is None:
-            self.pin_plain = pin          # keep it for the My Account tab
+            self.pin_plain = pin
         return ok
 
-    # -- parent accounts -------------------------------------------------------
     MAX_PARENTS = 4
 
     @staticmethod
@@ -786,7 +749,6 @@ class Data:
         if p is not None:
             self.parents.remove(p)
 
-    # -- child requests ---------------------------------------------------------
     def pending_requests(self):
         return [r for r in self.requests if r["status"] == "Pending"]
 
@@ -838,7 +800,7 @@ class Data:
     def _trim_requests(self):
         """Keeps all waiting requests and the newest finished ones."""
         keep, finished = [], 0
-        for r in self.requests:           # newest first
+        for r in self.requests:
             if r["status"] == "Pending" or not r["told"]:
                 keep.append(r)
             elif finished < REQUEST_KEEP:
@@ -870,7 +832,6 @@ class Data:
                  "Allowed" if approve else "Blocked")
         return f"{'Approved' if approve else 'Denied'}: {what}."
 
-    # -- coupons ------------------------------------------------------------------
     def new_coupon_code(self):
         alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
         existing = {c["code"] for c in self.coupons}
@@ -918,7 +879,6 @@ class Data:
             return True
         return False
 
-    # -- log / daily rollover -------------------------------------------------
     def _log_is_hidden(self, target):
         """True if a log line is about an app or website that is hidden.
         Catches "Game.exe", "Game.exe (30 min)", "Unblock Game.exe" and
@@ -946,7 +906,7 @@ class Data:
 
     def log(self, event, target, result="Info"):
         if self._log_is_hidden(target):
-            return                        # hidden items never show in the log
+            return
         stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.activity.insert(0, (stamp, event, target, result))
         del self.activity[LOG_LIMIT:]
@@ -967,7 +927,6 @@ class Data:
         self.bedtime = {"enabled": True, "start": "21:00", "end": "07:00"}
         self.warn_alerts = list(DEFAULT_ALERTS)
 
-    # -- saving and loading ---------------------------------------------------
     def prune_hidden(self):
         """Forget hidden names that are no longer in Always Allowed."""
         names = {r[0].lower() for r in self.allowed}
@@ -1006,7 +965,7 @@ class Data:
                 raise ValueError("unexpected file contents")
         except FileNotFoundError:
             raw = None
-        except ValueError as exc:             # damaged contents (not JSON)
+        except ValueError as exc:
             raw = None
             data.load_error = str(exc)
             try:
@@ -1014,8 +973,6 @@ class Data:
             except OSError:
                 pass
         except OSError as exc:
-            # Permission denied and similar: the file may be perfectly fine,
-            # so never start fresh or move it. The caller must not save.
             raw = None
             data.unreadable = str(exc)
         if raw is not None:
@@ -1042,7 +999,7 @@ class Data:
                 setattr(self, key, value)
         if "warn_alerts" not in raw and isinstance(raw.get("warn_before"),
                                                     str):
-            try:                          # the old single "10 minutes"
+            try:
                 self.warn_alerts = [int(raw["warn_before"].split()[0])]
             except (ValueError, IndexError):
                 pass
@@ -1100,7 +1057,6 @@ class Data:
                              if r[1] == "Website"][-SMART_DENIED_MAX:]
         self.smart_approved = [r for r in rows(self.smart_approved)
                                if r[1] == "Website"][-SMART_APPROVED_MAX:]
-        # LeafyGreen itself can never be on the blocklist or limited.
         self.blocked = [r for r in self.blocked
                         if not (r[1] == "App"
                                 and r[0].lower() in PROTECTED_APP_NAMES)]
@@ -1144,7 +1100,7 @@ class Data:
             tuple(a) for a in self.activity
             if isinstance(a, (list, tuple)) and len(a) == 4
             and all(isinstance(x, str) for x in a)][:LOG_LIMIT]
-        self.purge_hidden_log()           # hidden apps never show in the log
+        self.purge_hidden_log()
         self.quick_actions = list(DEFAULT_QUICK)
         self.grace_used = max(0, min(self.grace_used, 1000))
         cleaned = []
@@ -1165,12 +1121,6 @@ class Data:
         self._trim_requests()
 
 
-# --------------------------------------------------------------------------
-# App blocking engine
-# --------------------------------------------------------------------------
-# Windows needs these to keep running, so they are never closed, even if
-# someone adds them to a list.
-# The app's own program: it can never be blocked, limited or closed.
 PROTECTED_APP_NAMES = frozenset({"leafygreen.exe", "snortsecure.exe"})
 CRITICAL_PROCESSES = frozenset({
     "system", "registry", "smss.exe", "csrss.exe", "wininit.exe",
@@ -1264,9 +1214,9 @@ class WindowsProcessApi:
         k.GetCurrentProcessId.restype = ctypes.c_uint32
         self._k = k
         self._invalid = ctypes.c_void_p(-1).value
-        self._cache = {}                  # pid -> (name, path, session)
+        self._cache = {}
         self._my_session = self._session_of(k.GetCurrentProcessId())
-        self.last_error = 0               # Windows error of the last failed close
+        self.last_error = 0
         self.has_debug = self._enable_debug_privilege()
 
     def _enable_debug_privilege(self):
@@ -1288,20 +1238,19 @@ class WindowsProcessApi:
                 ctypes.c_uint32, vp, vp]
             a.AdjustTokenPrivileges.restype = ctypes.c_int
             token = vp()
-            # TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY
             if not a.OpenProcessToken(k.GetCurrentProcess(), 0x28,
                                       ctypes.byref(token)):
                 return False
             try:
                 tp = _TokenPrivileges()
                 tp.PrivilegeCount = 1
-                tp.Attributes = 0x2           # SE_PRIVILEGE_ENABLED
+                tp.Attributes = 0x2
                 if not a.LookupPrivilegeValueW(None, "SeDebugPrivilege",
                                                ctypes.byref(tp.Luid)):
                     return False
                 a.AdjustTokenPrivileges(token, 0, ctypes.byref(tp), 0,
                                         None, None)
-                return ctypes.get_last_error() == 0   # 1300 = not granted
+                return ctypes.get_last_error() == 0
             finally:
                 k.CloseHandle(token)
         except Exception:
@@ -1354,9 +1303,6 @@ class WindowsProcessApi:
                     name = _exe_name(entry)
                     seen.add(pid)
                     cached = self._info(pid, name)
-                    # Programs whose session could not be read are included
-                    # too, so one that Windows won't describe is not simply
-                    # invisible (and so never closed).
                     if cached[2] in (self._my_session, -1):
                         procs.append(Proc(pid, name, cached[1], cached[2]))
                 ok = k.Process32NextW(snap, ctypes.byref(entry))
@@ -1399,19 +1345,19 @@ class AppGuard:
     def __init__(self, data, api, windir=None, own_pid=None, own_names=(),
                  watcher=None, idle=None, media=None):
         self.data = data
-        self.idle = idle                  # callable: seconds since last input
-        self.media = media                # callable: True while a video plays
-        self.api = api                    # None when not on Windows
-        self.watcher = watcher            # BlockWatcher, or None
-        self._event_logged = {}           # name -> when it was last logged
+        self.idle = idle
+        self.media = media
+        self.api = api
+        self.watcher = watcher
+        self._event_logged = {}
         windir = windir or os.environ.get("SystemRoot") or r"C:\Windows"
         self.windir = windir.lower().rstrip("\\") + "\\"
         self.own_pid = os.getpid() if own_pid is None else own_pid
         self.never_kill = (CRITICAL_PROCESSES | PROTECTED_APP_NAMES
                            | {n.lower() for n in own_names})
-        self.changed = False              # something worth redrawing
+        self.changed = False
         self._last = None
-        self._streaks = set()             # blocked names already logged
+        self._streaks = set()
 
     def is_protected(self, name):
         return name.lower() in self.never_kill
@@ -1461,7 +1407,7 @@ class AppGuard:
         d.roll_day()
         if (self.idle is None or self.idle() < ACTIVE_WITHIN_SECONDS
                 or (self.media is not None and self.media())):
-            d.used_today_sec += dt        # only while someone is using the PC
+            d.used_today_sec += dt
         if self.api is None:
             return
         if self.watcher is not None:
@@ -1487,9 +1433,9 @@ class AppGuard:
             reason = None
             if name_l in blocked:
                 reason = ("Blocked app closed", "Blocked")
-            elif name_l in limited:           # before the allow list: apps
-                entry = limited[name_l]       # are recorded as allowed on
-                if entry.get("used_sec", 0) >= entry["limit"] * 60:   # first run
+            elif name_l in limited:
+                entry = limited[name_l]
+                if entry.get("used_sec", 0) >= entry["limit"] * 60:
                     reason = ("Daily limit reached, app closed", "Limited")
                 else:
                     entry["used_sec"] = entry.get("used_sec", 0) + dt
@@ -1546,8 +1492,8 @@ class BlockWatcher:
         self.api = WindowsProcessApi()
         self.never_kill = frozenset(never_kill)
         self.own_pid = os.getpid() if own_pid is None else own_pid
-        self.names = frozenset()          # lowercase exe names to close
-        self.events = collections.deque(maxlen=200)  # (name, closed, error)
+        self.names = frozenset()
+        self.events = collections.deque(maxlen=200)
         self._stop = threading.Event()
         threading.Thread(target=self._run, daemon=True).start()
 
@@ -1571,30 +1517,21 @@ class BlockWatcher:
             try:
                 self.sweep()
             except Exception:
-                pass                      # keep watching no matter what
+                pass
 
 
-# --------------------------------------------------------------------------
-# Enforcement: website blocking, Pause Internet, Lock Device, time limits
-# These need administrator rights (the install.bat setup runs the app as
-# SYSTEM). Without them the steps that need rights fail and are logged.
-# --------------------------------------------------------------------------
 NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 HOSTS_MARK_START = "# >>> LeafyGreen blocked websites (managed automatically) >>>"
 HOSTS_MARK_END = "# <<< LeafyGreen blocked websites <<<"
-# What the app was called before; its block is cleaned up too.
 LEGACY_HOSTS_MARKS = (
     ("# >>> Snort Secure blocked websites (managed automatically) >>>",
      "# <<< Snort Secure blocked websites <<<"),)
 BROWSER_EXES = frozenset({"chrome.exe", "msedge.exe", "firefox.exe",
                           "brave.exe", "opera.exe", "vivaldi.exe",
                           "iexplore.exe"})
-# Firefox's error pages ("Unable to connect", which is what a blocked site
-# shows) don't name the site in the window title, so these titles count.
 FIREFOX_ERROR_TITLES = ("unable to connect", "server not found",
                         "problem loading page", "secure connection failed",
                         "did not connect")
-# The hosts file can't use wildcards, so common forms are listed by hand.
 COMMON_SUBDOMAINS = ("www", "m", "mobile")
 SITE_ALIASES = {
     "youtube.com": ("youtu.be", "youtube-nocookie.com"),
@@ -1619,8 +1556,6 @@ def title_shows_site(title, domain):
     so 'news.com' doesn't match 'Google News' and 'x.com' can't match
     every title with an x in it."""
     low = title.lower()
-    # The full name counts, but not as the tail of a longer name ('x.com'
-    # must not match 'netflix.com' or 'dropbox.com').
     if re.search(r"(?<![a-z0-9-])" + re.escape(domain) + r"(?![a-z0-9])",
                  low):
         return True
@@ -1657,7 +1592,7 @@ class InputMonitor:
             info = _LastInputInfo()
             info.cbSize = ctypes.sizeof(info)
             if not self._u.GetLastInputInfo(ctypes.byref(info)):
-                return 0.0                # unknown: count it as active
+                return 0.0
             return ((self._k.GetTickCount() - info.dwTime) & 0xFFFFFFFF) \
                 / 1000.0
         except Exception:
@@ -1698,7 +1633,7 @@ class MediaMonitor:
                         return False
                     continue
                 if stripped.upper().endswith(":") and stripped.isupper():
-                    return False          # next section: nothing listed
+                    return False
                 if stripped.startswith("["):
                     return True
                 in_display = "seen"
@@ -1779,7 +1714,7 @@ class WebsiteGuard:
         self.hosts_path = hosts_path or os.path.join(
             os.environ.get("SystemRoot", r"C:\Windows"),
             "System32", "drivers", "etc", "hosts")
-        self._applied = None              # domains currently in the file
+        self._applied = None
         self._last_try = -999.0
         self._last_error = None
         self._windows = None
@@ -1797,7 +1732,7 @@ class WebsiteGuard:
             if kind != "Website":
                 continue
             site = normalize_site_name(name)
-            if site is not None:          # anything odd is ignored
+            if site is not None:
                 out.add(site)
                 out.update(SITE_ALIASES.get(site, ()))
         return out
@@ -1840,13 +1775,12 @@ class WebsiteGuard:
     def _sync_hosts(self, domains):
         """Returns an error message or None."""
         try:
-            # surrogateescape keeps any non-UTF-8 bytes intact on rewrite.
             with open(self.hosts_path, encoding="utf-8",
                       errors="surrogateescape", newline="") as f:
                 original = f.read()
             if not domains and HOSTS_MARK_START not in original and not any(
                     legacy in original for legacy, _ in LEGACY_HOSTS_MARKS):
-                return None               # nothing of ours: leave it alone
+                return None
             newline = "\r\n" if "\r\n" in original else "\n"
             new_text = self.build_hosts_text(original, domains, newline)
             if new_text.splitlines() != original.splitlines():
@@ -1890,22 +1824,11 @@ class WebsiteGuard:
                 data.log("Browser closed (blocked site)", hit, "Blocked")
 
 
-# --------------------------------------------------------------------------
-# SmartSafe: automatic website checks
-# --------------------------------------------------------------------------
-# Websites the child visits (read from the browsers' own history) are looked
-# up with Cloudflare's "1.1.1.1 for Families" resolver. It needs no account or
-# key: for a domain it classes as malware, phishing or adult content it
-# answers 0.0.0.0 instead of a real address. Unsafe sites go to SmartSafe
-# Denied (and are blocked like any Always Blocked website); the rest go to
-# SmartSafe Approved. Sites the parent already put on a list are never checked.
 SMARTSAFE_DOH_URL = "https://family.cloudflare-dns.com/dns-query"
-SMARTSAFE_SCAN_SECONDS = 3         # how often new visits are looked for
-# These two websites are never denied by SmartSafe, whatever Cloudflare says.
-# Only the parent's own Always Blocked list can block them.
+SMARTSAFE_SCAN_SECONDS = 3
 ALWAYS_ALLOWED_SITES = ("discord.gg", "discord.com")
-SMARTSAFE_PER_SCAN = 8            # websites looked up per scan
-SMARTSAFE_RECHECK_SECONDS = 6 * 3600   # for names that did not resolve
+SMARTSAFE_PER_SCAN = 8
+SMARTSAFE_RECHECK_SECONDS = 6 * 3600
 SMART_DENIED_MAX = 500
 SMART_APPROVED_MAX = 1000
 PRIVATE_SUFFIXES = (".local", ".lan", ".internal", ".home", ".localdomain",
@@ -1918,7 +1841,7 @@ CHROMIUM_BASES = (
     r"AppData\Roaming\Opera Software\Opera Stable",
 )
 FIREFOX_PROFILES = r"AppData\Roaming\Mozilla\Firefox\Profiles"
-_WEBKIT_EPOCH = 11644473600       # seconds from 1601 to 1970
+_WEBKIT_EPOCH = 11644473600
 
 
 def child_home():
@@ -2058,7 +1981,7 @@ def visited_hosts(home, cursors, sigs=None):
             rows = _read_history(path, kind, cursor)
         except (OSError, sqlite3.Error):
             if sigs is not None:
-                sigs.pop(path, None)      # try this file again next time
+                sigs.pop(path, None)
             continue
         for url, stamp in rows:
             host = host_from_url(url)
@@ -2133,9 +2056,9 @@ class SmartSafe:
         self.home_func = home_func
         self.fetch_json = fetch_json
         self.enabled = False
-        self.results = collections.deque()    # (host, verdict)
+        self.results = collections.deque()
         self.pending = collections.OrderedDict()
-        self._seen = {}                       # host -> time (unknown names)
+        self._seen = {}
         self._cursors = {}
         self._sigs = {}
         self._lists = (frozenset(), frozenset(), frozenset())
@@ -2151,14 +2074,11 @@ class SmartSafe:
     def stop(self):
         self._stop.set()
 
-    # -- main thread -------------------------------------------------------
     def tick(self, data, enabled, note):
         """Collects finished checks. Returns True if a list changed."""
         self.enabled = enabled
         blocked, allowed = parent_site_lists(data)
         changed = False
-        # A website the parent has since allowed (or an always-allowed one)
-        # no longer stays denied.
         keep = [r for r in data.smart_denied
                 if website_decision(r[0], blocked, allowed) == "check"]
         if len(keep) != len(data.smart_denied):
@@ -2171,7 +2091,7 @@ class SmartSafe:
             host, verdict = self.results.popleft()
             decision = website_decision(host, blocked, allowed)
             if host in smart or decision in ("block", "allow"):
-                continue                  # the parent's lists decide
+                continue
             row = [host, "Website", today_str()]
             if verdict == "unsafe" and decision == "check":
                 data.smart_denied.append(row)
@@ -2184,7 +2104,6 @@ class SmartSafe:
                 changed = True
         return changed
 
-    # -- background thread ---------------------------------------------------
     def _run(self):
         while not self._stop.wait(1):
             try:
@@ -2215,17 +2134,17 @@ class SmartSafe:
             blocked, allowed, smart = self._lists
             decision = website_decision(host, blocked, allowed)
             if host in smart or decision in ("block", "allow"):
-                del self.pending[host]    # the parent's lists decide
+                del self.pending[host]
                 continue
-            if decision == "always":      # never sent to Cloudflare
+            if decision == "always":
                 del self.pending[host]
                 self.results.append((host, "safe"))
                 continue
             try:
                 verdict = smartsafe_check(host, self.fetch_json)
-            except Exception as exc:      # offline, paused, rate limited
+            except Exception as exc:
                 self.last_error = str(exc)
-                return                    # try again next scan
+                return
             del self.pending[host]
             if verdict == "unknown":
                 self._seen[host] = now
@@ -2259,7 +2178,7 @@ class InternetPauseGuard:
                 names = [ln.strip() for ln in f if ln.strip()]
         except OSError:
             return
-        if names:                         # left over from an earlier run
+        if names:
             self.disabled = set(names)
             self.active = True
 
@@ -2323,7 +2242,7 @@ class InternetPauseGuard:
                 if enabled:
                     new = name not in self.disabled
                     self.disabled.add(name)
-                    self._save()          # written before it is turned off
+                    self._save()
                     if self._set(name, False):
                         if new and log:
                             log("Network adapter turned off", name)
@@ -2347,7 +2266,7 @@ class InternetPauseGuard:
             if restored and log:
                 log("Network adapters turned back on", ", ".join(restored))
             if failed:
-                self._retry_at = now + 5  # try again in a few seconds
+                self._retry_at = now + 5
             else:
                 self.active = False
 
@@ -2388,8 +2307,8 @@ class Notifier:
     IDI_APPLICATION = 32512
 
     def __init__(self, hwnd_of, shell=None, icon=None):
-        self.hwnd_of = hwnd_of            # callable: window handle (int)
-        self.shell = shell                # callable(message, data) -> bool
+        self.hwnd_of = hwnd_of
+        self.shell = shell
         self.icon = icon
         self._added = False
         if shell is None and sys.platform == "win32":
@@ -2470,7 +2389,7 @@ class LimitGuard:
             return False
         if start < end:
             return start <= cur < end
-        return cur >= start or cur < end          # runs past midnight
+        return cur >= start or cur < end
 
     def reason(self, data, moment=None):
         """Why the screen should be locked right now, or None."""
@@ -2501,7 +2420,7 @@ class LimitGuard:
             left = total - data.used_today_sec / 60.0
             due = [a for a in alerts if 0 < left <= a
                    and ("limit", today, total, a) not in self._warned]
-            if due:                       # several at once: say it once
+            if due:
                 for a in due:
                     self._warned.add(("limit", today, total, a))
                 return (f"About {max(1, math.ceil(left))} minute(s) of "
@@ -2569,9 +2488,6 @@ class LimitGuard:
             log("Screen locked", why)
 
 
-# --------------------------------------------------------------------------
-# Dialogs
-# --------------------------------------------------------------------------
 class Dialog(tk.Toplevel):
     """Small modal dialog. After construction, read `.result` (None if the
     dialog was cancelled)."""
@@ -2585,7 +2501,7 @@ class Dialog(tk.Toplevel):
         self.configure(bg=BG)
         self.resizable(False, False)
         self.transient(parent.winfo_toplevel())
-        try:                              # opened from the countdown window
+        try:
             if parent.winfo_toplevel().attributes("-topmost"):
                 self.attributes("-topmost", True)
         except tk.TclError:
@@ -2658,7 +2574,6 @@ class PinEntry(tk.Frame):
             box.bind("<<Paste>>", self._paste)
             self.boxes.append(box)
 
-    # -- reading / writing ----------------------------------------------
     def get(self):
         return "".join(b.get() for b in self.boxes)
 
@@ -2694,11 +2609,10 @@ class PinEntry(tk.Frame):
         if self.on_complete and len(self.get()) == self.LENGTH:
             self.after(120, self.on_complete)
 
-    # -- keys -------------------------------------------------------------
     def _key(self, event, i):
         key, char = event.keysym, event.char
         if key in ("Tab", "ISO_Left_Tab", "Return", "KP_Enter", "Escape"):
-            return None                          # normal dialog behaviour
+            return None
         if key == "BackSpace":
             if self.boxes[i].get():
                 self._set(i, "")
@@ -2725,9 +2639,9 @@ class PinEntry(tk.Frame):
             else:
                 self._finished()
             return "break"
-        if event.state & 0x4:                    # Ctrl+V and friends
+        if event.state & 0x4:
             return None
-        return "break"                           # letters etc. are ignored
+        return "break"
 
     def _paste(self, event=None):
         try:
@@ -2786,7 +2700,7 @@ class PinDialog(Dialog):
             else:
                 self._ok()
         except tk.TclError:
-            pass                                  # dialog already closed
+            pass
 
     def _fail(self, message, clear_all):
         self.error_var.set(message)
@@ -2910,6 +2824,7 @@ class RequestDialog(Dialog):
         error = self.submit(kind, self.detail_var.get(), minutes,
                             self.note_var.get())
         if error:
+            # Notify
             messagebox.showerror(APP_NAME, error, parent=self)
             return False
         return True
@@ -2922,7 +2837,7 @@ class ReviewDialog(Dialog):
     """Waiting requests, each with Approve / Deny / Decide later. result =
     {request id: "approve" or "deny"} for the ones that were decided."""
     ok_text = "Apply"
-    SHOW = 12                             # rows shown before scrolling
+    SHOW = 12
 
     def __init__(self, parent, requests):
         self.requests = requests
@@ -3009,6 +2924,7 @@ class CouponPickDialog(Dialog):
 
     def validate(self):
         if not self.tree.selection():
+            # Notify
             messagebox.showinfo(APP_NAME, "Select a coupon first.",
                                 parent=self)
             return False
@@ -3067,17 +2983,21 @@ class ParentDialog(Dialog):
     def validate(self):
         name = self.user_var.get().strip()
         if not name:
+            # Notify
             messagebox.showerror(APP_NAME, "Enter a username.", parent=self)
             return False
         if not self.fixed_name and name.lower() in self.existing:
+            # Notify
             messagebox.showerror(APP_NAME, "That username is already used.",
                                  parent=self)
             return False
         if len(self.pw_var.get()) < 6:
+            # Notify
             messagebox.showerror(APP_NAME, "The password must be at least "
                                  "6 characters.", parent=self)
             return False
         if self.pw_var.get() != self.pw2_var.get():
+            # Notify
             messagebox.showerror(APP_NAME, "The two passwords don't match.",
                                  parent=self)
             return False
@@ -3139,6 +3059,7 @@ class ActivateKeyDialog(Dialog):
     def validate(self):
         ok, _, error = self.data.validate_activation(self.key_var.get())
         if not ok:
+            # Notify
             messagebox.showerror(APP_NAME, error or "That key is not "
                                  "correct.", parent=self)
             return False
@@ -3180,6 +3101,7 @@ class KeyEntryDialog(Dialog):
 
     def validate(self):
         if not self.key_var.get().strip():
+            # Notify
             messagebox.showerror(APP_NAME, "Enter a key.", parent=self)
             return False
         if self.no_end.get():
@@ -3187,6 +3109,7 @@ class KeyEntryDialog(Dialog):
         try:
             datetime.date.fromisoformat(self.date_var.get().strip())
         except ValueError:
+            # Notify
             messagebox.showerror(APP_NAME, "Enter the end date as "
                                  "YYYY-MM-DD, for example 2027-01-31.",
                                  parent=self)
@@ -3241,6 +3164,7 @@ class KeyManagerDialog(Dialog):
     def _edit(self):
         sel = self.tree.selection()
         if len(sel) != 1:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one key first.",
                                 parent=self)
             return
@@ -3287,6 +3211,7 @@ class AppDialog(Dialog):
 
     def validate(self):
         if not self.name_var.get().strip():
+            # Notify
             messagebox.showerror(APP_NAME, "Enter an app name.", parent=self)
             return False
         try:
@@ -3294,6 +3219,7 @@ class AppDialog(Dialog):
         except ValueError:
             value = 0
         if not 1 <= value <= 1440:
+            # Notify
             messagebox.showerror(
                 APP_NAME, "Enter a limit between 1 and 1440 minutes.",
                 parent=self)
@@ -3326,6 +3252,7 @@ class CouponDialog(Dialog):
         except ValueError:
             value = 0
         if not 1 <= value <= 480:
+            # Notify
             messagebox.showerror(
                 APP_NAME, "Enter between 1 and 480 minutes.", parent=self)
             return False
@@ -3372,7 +3299,7 @@ class CountdownWindow(tk.Toplevel):
         x = (self.winfo_screenwidth() - self.winfo_width()) // 2
         y = (self.winfo_screenheight() - self.winfo_height()) // 3
         self.geometry(f"+{max(x, 0)}+{max(y, 0)}")
-        self.deiconify()                  # even if the main window is minimized
+        self.deiconify()
         self.bell()
         try:
             self.focus_force()
@@ -3380,7 +3307,6 @@ class CountdownWindow(tk.Toplevel):
             pass
         self._tick()
 
-    # -- actions ------------------------------------------------------------------
     def graces_left(self):
         return max(0, GRACE_MINUTES_PER_DAY - self.app.data.grace_used)
 
@@ -3398,6 +3324,7 @@ class CountdownWindow(tk.Toplevel):
         d = self.app.data
         coupons = d.unused_coupons()
         if not coupons:
+            # Notify
             messagebox.showinfo(APP_NAME, "You don't have any coupons to "
                                 "redeem.", parent=self)
             return
@@ -3420,11 +3347,10 @@ class CountdownWindow(tk.Toplevel):
         except tk.TclError:
             pass
 
-    # -- the clock ------------------------------------------------------------------
     def _tick(self):
         left = self.app.limit_guard.seconds_left(self.app.data)
         if left is None or left > COUNTDOWN_SECONDS + 1:
-            self.close()                  # time was added (or limit removed)
+            self.close()
             return
         secs = max(0, math.ceil(left))
         self.clock_var.set(f"{secs // 60}:{secs % 60:02d}")
@@ -3439,25 +3365,18 @@ class CountdownWindow(tk.Toplevel):
             self.note_var.set("Time is up.")
             self._job = self.after(2500, self.close)
             return
-        if self.grab_current() is None:   # not while a coupon list is open
+        if self.grab_current() is None:
             self.attributes("-topmost", True)
             self.lift()
         self._job = self.after(250, self._tick)
 
 
-# --------------------------------------------------------------------------
-# Pages
-# --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
-# Animated protection shield
-# --------------------------------------------------------------------------
 SHIELD_GREEN = "#1f8a5b"
 SHIELD_GREEN_EDGE = "#12382a"
 SHIELD_RED = "#d9534f"
 SHIELD_RED_EDGE = "#8b1a1a"
 SHIELD_AMBER = "#e8920c"
 SHIELD_AMBER_EDGE = "#8a4f00"
-# state -> (shield fill, shield edge, caption colour)
 SHIELD_STATES = {
     "on": (SHIELD_GREEN, SHIELD_GREEN_EDGE, GREEN),
     "warn": (SHIELD_AMBER, SHIELD_AMBER_EDGE, AMBER_TEXT),
@@ -3465,10 +3384,8 @@ SHIELD_STATES = {
     "ask_off": (SHIELD_AMBER, SHIELD_AMBER_EDGE, RED),
     "off": (SHIELD_RED, SHIELD_RED_EDGE, RED),
 }
-# Outline of the shield, centered on (0, 0); smoothed when drawn.
 _SHIELD_CORNERS = [(-44, -46), (0, -58), (44, -46), (46, 6), (30, 36),
                    (0, 58), (-30, 36), (-46, 6)]
-# How rounded the corners are: lower is sharper (0.5 is very round).
 SHIELD_ROUNDNESS = 0.06
 
 
@@ -3556,7 +3473,7 @@ class ShieldWidget(tk.Canvas):
         self.hover = 0.0
         self.hover_target = 0.0
         self._job = None
-        self._dirty = True                # needs a redraw
+        self._dirty = True
         self._was_busy = False
         self.bind("<Map>", lambda e: setattr(self, "_dirty", True))
         self.bind("<Button-1>", self._click)
@@ -3567,7 +3484,6 @@ class ShieldWidget(tk.Canvas):
         self.bind("<Destroy>", self._stop)
         self._frame()
 
-    # -- public ---------------------------------------------------------
     def set_state(self, state, animate=True):
         if state == self.state:
             return
@@ -3580,7 +3496,6 @@ class ShieldWidget(tk.Canvas):
         """Wiggle sideways (used when a change is refused)."""
         self.shake_start = time.monotonic()
 
-    # -- events ---------------------------------------------------------
     def _click(self, event=None):
         self.focus_set()
         if self.command:
@@ -3615,13 +3530,12 @@ class ShieldWidget(tk.Canvas):
                         self.anim_start = self.shake_start = None
                     self._dirty = False
                 else:
-                    self._dirty = True    # draw once it is visible again
+                    self._dirty = True
             self._was_busy = busy
             self._job = self.after(33 if busy else 250, self._frame)
         except tk.TclError:
-            self._job = None  # widget was destroyed
+            self._job = None
 
-    # -- drawing --------------------------------------------------------
     @staticmethod
     def _points(cx, cy, scale, shape=SHIELD_SHAPE):
         flat = []
@@ -3648,7 +3562,6 @@ class ShieldWidget(tk.Canvas):
             self.create_line(*flat, fill="white", width=width,
                              capstyle="round", joinstyle="round")
         elif state in ("ask", "ask_off"):
-            # yellow "!" with a dark outline so it reads on the amber
             self._bang(cx, cy, s, width, grow, SHIELD_AMBER_EDGE, 5)
             self._bang(cx, cy, s, width, grow, "#ffe14d", 0)
         elif state == "warn":
@@ -3664,7 +3577,6 @@ class ShieldWidget(tk.Canvas):
         now = time.monotonic()
         self.delete("all")
 
-        # Where are we in the transition?
         animating, t = False, 1.0
         if self.anim_start is not None:
             t = (now - self.anim_start) / self.ANIM_SECONDS
@@ -3674,12 +3586,10 @@ class ShieldWidget(tk.Canvas):
                 animating = True
         e = _ease(t) if animating else 1.0
 
-        # Size: pop during a change, grow slightly on hover.
         pop = 1 + 0.12 * math.sin(math.pi * t) if animating else 1.0
         self.hover += (self.hover_target - self.hover) * 0.25
         scale = pop * (1 + 0.05 * self.hover)
 
-        # Shake when a change was refused.
         dx = 0.0
         if self.shake_start is not None:
             k = (now - self.shake_start) / 0.45
@@ -3695,7 +3605,6 @@ class ShieldWidget(tk.Canvas):
         edge = _mix(f_edge, t_edge, e)
         caption_colour = _mix(f_txt, t_txt, e)
 
-        # Shield body plus an inner highlight line.
         self.create_polygon(self._points(cx, cy, scale), smooth=True,
                             fill=fill, outline=edge, width=4,
                             joinstyle="miter")
@@ -3703,7 +3612,6 @@ class ShieldWidget(tk.Canvas):
                             fill="", outline=_mix(fill, "#ffffff", 0.5),
                             width=2, joinstyle="miter")
 
-        # Icon: the old one shrinks away, then the new one grows in.
         if animating and t < 0.4:
             icon_state, grow = self.from_state, 1 - t / 0.4
         elif animating:
@@ -3715,7 +3623,6 @@ class ShieldWidget(tk.Canvas):
         if s > 0.03:
             self._icon(icon_state, cx, cy, s, width, grow)
 
-        # Caption.
         if not self.captions:
             return
         label = self.state if (not animating or t >= 0.5) else self.from_state
@@ -3744,8 +3651,8 @@ class SlideSwitch(tk.Canvas):
     def __init__(self, parent, on=False, command=None):
         super().__init__(parent, width=self.W, height=self.H, bg="white",
                          highlightthickness=0, cursor="hand2")
-        self.on = on                      # the accepted setting
-        self.pos = 1.0 if on else 0.0     # knob position, 0 (off) to 1 (on)
+        self.on = on
+        self.pos = 1.0 if on else 0.0
         self.target = self.pos
         self.command = command
         self.dragging = False
@@ -3757,7 +3664,6 @@ class SlideSwitch(tk.Canvas):
         self.bind("<Destroy>", self._stop)
         self._draw()
 
-    # -- geometry -------------------------------------------------------
     @property
     def _d(self):
         return self.H - 2 * self.PAD
@@ -3769,7 +3675,6 @@ class SlideSwitch(tk.Canvas):
     def _knob_x(self):
         return self.PAD + self._d / 2 + self.pos * self._travel
 
-    # -- public ---------------------------------------------------------
     def set_value(self, on, animate=True):
         """Match the switch to the real setting (ignored mid-slide)."""
         if self.dragging:
@@ -3782,7 +3687,6 @@ class SlideSwitch(tk.Canvas):
             self.pos = self.target
             self._draw()
 
-    # -- mouse ----------------------------------------------------------
     def _press(self, event):
         grab = event.x - self._knob_x()
         if abs(grab) <= self._d / 2 + 3 and abs(event.y - self.H / 2) <= \
@@ -3812,7 +3716,6 @@ class SlideSwitch(tk.Canvas):
         self.target = 1.0 if self.on else 0.0
         self._animate()
 
-    # -- animation ------------------------------------------------------
     def _stop(self, event=None):
         if self._job is not None:
             try:
@@ -3845,7 +3748,6 @@ class SlideSwitch(tk.Canvas):
         w, h = self.W, self.H
         mid = h / 2
         track = self.track_colour(self.pos)
-        # A fully rounded pill: a half circle at each end plus a bar.
         self.create_oval(1, 1, h - 1, h - 1, fill=track, outline=track)
         self.create_oval(w - h + 1, 1, w - 1, h - 1, fill=track,
                          outline=track)
@@ -3908,7 +3810,6 @@ class DashboardPage(Page):
             self.card_vars[key] = var
             self.columnconfigure(i, weight=1, uniform="cards")
 
-        # SmartSafe switch (where "Coupons available" used to be)
         smart_card = ttk.Frame(self, style="Card.TFrame", padding=14)
         smart_card.grid(row=2, column=3, sticky="nsew", padx=(8, 0))
         self.smart_switch = SlideSwitch(
@@ -3920,14 +3821,12 @@ class DashboardPage(Page):
                   style="CardText.TLabel").pack(anchor="w", pady=(6, 0))
         self.columnconfigure(3, weight=1, uniform="cards")
 
-        # Protection shield
         shield_card = ttk.Frame(self, style="Card.TFrame", padding=10)
         shield_card.grid(row=3, column=0, sticky="nsew", pady=(12, 0))
         self.shield = ShieldWidget(shield_card, state=self._shield_state(),
                                    command=self.toggle_protection)
         self.shield.pack()
 
-        # Quick actions
         actions = ttk.Frame(self, style="Card.TFrame", padding=14)
         actions.grid(row=3, column=1, columnspan=3, sticky="nsew",
                      padx=(8, 0), pady=(12, 0))
@@ -3954,7 +3853,6 @@ class DashboardPage(Page):
         actions.columnconfigure(0, weight=1, uniform="act")
         actions.columnconfigure(1, weight=1, uniform="act")
 
-        # Recent activity
         head = ttk.Frame(self)
         head.grid(row=4, column=0, columnspan=4, sticky="ew", pady=(16, 6))
         ttk.Label(head, text="Recent Activity (see the Log tab for all of it)",
@@ -3973,7 +3871,6 @@ class DashboardPage(Page):
         wrap.grid(row=5, column=0, columnspan=4, sticky="nsew")
         self.rowconfigure(5, weight=1)
 
-    # -- quick actions -----------------------------------------------------------
     def _build_quick(self):
         """Creates the (fixed) Quick Actions buttons."""
         for child in self.quick_frame.winfo_children():
@@ -4016,7 +3913,6 @@ class DashboardPage(Page):
                                 "The child is told on their computer.")
         self.app._on_tab_changed()
 
-    # -- SmartSafe switch ------------------------------------------------
     def _smartsafe_on(self):
         return self.data.smartsafe_enabled
 
@@ -4046,7 +3942,6 @@ class DashboardPage(Page):
         self.refresh()
         return True
 
-    # -- actions ------------------------------------------------------------
     def toggle_protection(self):
         if not self.authorize():
             self.shield.shake()
@@ -4096,13 +3991,13 @@ class DashboardPage(Page):
     def clear_log(self):
         if not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, "Clear the activity log?",
                                parent=self):
             self.data.activity.clear()
             self.app.set_status("Activity log cleared.")
             self.refresh()
 
-    # -- display ------------------------------------------------------------
     def refresh(self):
         d = self.data
         today = DAYS[datetime.date.today().weekday()]
@@ -4215,7 +4110,6 @@ class TimeLimitsPage(Page):
                                values=["Off"] + [alert_label(m)
                                                  for m in ALERT_CHOICES])
             box.grid(row=0, column=i, padx=(0, 6))
-            # Applies right away and does not need the PIN.
             box.bind("<<ComboboxSelected>>", self.alerts_changed)
             self.alert_vars.append(var)
         ttk.Label(bed, text="Shown this long before time runs out. Anyone "
@@ -4241,7 +4135,7 @@ class TimeLimitsPage(Page):
             if text and text != "Off":
                 picked.append(int(text.split()[0]))
         self.data.warn_alerts = clean_alerts(picked)
-        self.load_alerts()                # tidy: no repeats, largest first
+        self.load_alerts()
         self.app.set_status(describe_alerts(self.data.warn_alerts))
 
     def load_alerts(self):
@@ -4283,6 +4177,7 @@ class TimeLimitsPage(Page):
     def reset(self):
         if not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, "Reset all time settings to the "
                                "defaults?", parent=self):
             self.data.reset_time_settings()
@@ -4298,10 +4193,12 @@ class TimeLimitsPage(Page):
                 h = int(hours.get())
                 m = int(mins.get())
             except ValueError:
+                # Notify
                 messagebox.showerror(
                     APP_NAME, f"Enter whole numbers for {day}.", parent=self)
                 return
             if not (0 <= h <= 24 and 0 <= m <= 59) or h * 60 + m > 1440:
+                # Notify
                 messagebox.showerror(
                     APP_NAME, f"The limit for {day} must be 24 hours or "
                     "less.", parent=self)
@@ -4311,6 +4208,7 @@ class TimeLimitsPage(Page):
 
         start, end = self.bed_start.get().strip(), self.bed_end.get().strip()
         if not (TIME_RE.match(start) and TIME_RE.match(end)):
+            # Notify
             messagebox.showerror(
                 APP_NAME, "Bedtime times must look like 21:00 (HH:MM, "
                 "24-hour).", parent=self)
@@ -4395,7 +4293,6 @@ class ListPage(Page):
         ttk.Label(bar, textvariable=self.count_var,
                   style="Muted.TLabel").pack(side="right")
 
-        # Collapsible SmartSafe section (the automatic website checks).
         denied = self.attr == "blocked"
         self.smart_attr = "smart_denied" if denied else "smart_approved"
         self.smart_label = ("SmartSafe Denied" if denied
@@ -4426,7 +4323,6 @@ class ListPage(Page):
             side="left", padx=8)
 
         if self.attr == "allowed":
-            # Collapsible "Hidden" section at the bottom of the page.
             self.hidden_open = False
             self.hidden_btn = ttk.Button(self, command=self.toggle_hidden)
             self.hidden_btn.pack(anchor="w", pady=(10, 0))
@@ -4449,6 +4345,7 @@ class ListPage(Page):
             return
         name = self.name_var.get().strip()
         if not name:
+            # Notify
             messagebox.showinfo(APP_NAME, "Type a website or app name "
                                 "first.", parent=self)
             return
@@ -4456,6 +4353,7 @@ class ListPage(Page):
         if kind == "Website":
             site = normalize_site_name(name)
             if site is None:
+                # Notify
                 messagebox.showwarning(
                     APP_NAME, "That doesn't look like a website address. "
                     "Type the full name, such as example.com (no spaces).",
@@ -4465,23 +4363,27 @@ class ListPage(Page):
         else:
             name = normalize_app_name(name)
         if not name:
+            # Notify
             messagebox.showinfo(APP_NAME, "Type a website or app name "
                                 "first.", parent=self)
             return
 
         lowered = name.lower()
         if any(row[0].lower() == lowered for row in self.items()):
+            # Notify
             messagebox.showinfo(APP_NAME, f"'{name}' is already in this "
                                 "list.", parent=self)
             return
         other = getattr(self.data, self.other_attr)
         if any(row[0].lower() == lowered for row in other):
+            # Notify
             messagebox.showwarning(
                 APP_NAME, f"'{name}' is already in {self.other_name}. "
                 "Use the move button to switch it.", parent=self)
             return
         if kind == "App" and self.attr == "blocked" \
                 and self.app.is_protected(name):
+            # Notify
             messagebox.showwarning(APP_NAME, self._protected_message(name),
                                    parent=self)
             return
@@ -4496,6 +4398,7 @@ class ListPage(Page):
         selected = sorted((int(i) for i in self.tree.selection()),
                           reverse=True)
         if not selected:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one or more rows "
                                 "first.", parent=self)
         return selected
@@ -4533,6 +4436,7 @@ class ListPage(Page):
             self.data.log(f"Moved to {self.other_name}", row[0])
             moved += 1
         if refused:
+            # Notify
             messagebox.showwarning(
                 APP_NAME, self._protected_message(", ".join(refused)),
                 parent=self)
@@ -4556,6 +4460,7 @@ class ListPage(Page):
         selected = sorted((int(i) for i in self.smart_tree.selection()),
                           reverse=True)
         if not selected:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one or more rows "
                                 "first.", parent=self)
         return selected
@@ -4616,6 +4521,7 @@ class ListPage(Page):
     def unhide_selected(self):
         selected = self.hidden_tree.selection()
         if not selected:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one or more rows "
                                 "first.", parent=self)
             return
@@ -4632,6 +4538,7 @@ class ListPage(Page):
             return
         if not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, f"Remove everything from "
                                f"{self.title_text}?", parent=self):
             self.items().clear()
@@ -4718,6 +4625,7 @@ class LimitedAppsPage(Page):
     def _selected_index(self):
         selection = self.tree.selection()
         if len(selection) != 1:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select a single app first.",
                                 parent=self)
             return None
@@ -4736,11 +4644,13 @@ class LimitedAppsPage(Page):
         name, minutes = dlg.result
         name = normalize_app_name(name)
         if self.app.is_protected(name):
+            # Notify
             messagebox.showwarning(
                 APP_NAME, f"'{name}' is needed by Windows or by "
                 "LeafyGreen itself, so it can't be limited.", parent=self)
             return
         if any(a["name"].lower() == name.lower() for a in self.data.limited):
+            # Notify
             messagebox.showinfo(APP_NAME, f"'{name}' already has a limit.",
                                 parent=self)
             return
@@ -4770,6 +4680,7 @@ class LimitedAppsPage(Page):
         if index is None or not self.authorize():
             return
         entry = self.data.limited[index]
+        # Notify
         if messagebox.askyesno(APP_NAME, f"Remove the limit for "
                                f"{entry['name']}?", parent=self):
             self.data.limited.pop(index)
@@ -4780,6 +4691,7 @@ class LimitedAppsPage(Page):
     def reset_usage(self):
         if not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, "Reset today's usage for every "
                                "app?", parent=self):
             for entry in self.data.limited:
@@ -4847,6 +4759,7 @@ class CouponsPage(Page):
     def redeem(self):
         selected = self._selected()
         if len(selected) != 1:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select a single coupon to "
                                 "redeem.", parent=self)
             return
@@ -4854,9 +4767,11 @@ class CouponsPage(Page):
             return
         coupon = self.data.coupons[selected[0]]
         if coupon["status"] != "Unused":
+            # Notify
             messagebox.showinfo(APP_NAME, "That coupon was already "
                                 "redeemed.", parent=self)
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, f"Redeem {coupon['code']} for "
                                f"{coupon['minutes']} extra minutes?",
                                parent=self):
@@ -4868,6 +4783,7 @@ class CouponsPage(Page):
     def copy_code(self):
         selected = self._selected()
         if len(selected) != 1:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select a single coupon first.",
                                 parent=self)
             return
@@ -4879,11 +4795,13 @@ class CouponsPage(Page):
     def delete(self):
         selected = sorted(self._selected(), reverse=True)
         if not selected:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one or more coupons "
                                 "first.", parent=self)
             return
         if not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, f"Delete {len(selected)} "
                                "coupon(s)?", parent=self):
             for index in selected:
@@ -4980,7 +4898,7 @@ class LogPage(Page):
                   style="Muted.TLabel").pack(side="right")
 
     def _changed(self, event=None):
-        self.tree._sort_state = None      # the Sort by choice decides again
+        self.tree._sort_state = None
         self.refresh()
 
     def reset_filters(self):
@@ -5119,7 +5037,6 @@ class AccountPage(Page):
                    command=self.renew).pack(anchor="w")
 
     def renew(self):
-        # Activation is allowed even while expired - it is how you unlock.
         if not self.authorize(allow_locked=True):
             return
         dlg = ActivateKeyDialog(self, self.data)
@@ -5127,6 +5044,7 @@ class AccountPage(Page):
             return
         ok, error = self.data.activate(dlg.result)
         if not ok:
+            # Notify
             messagebox.showerror(APP_NAME, error or "That key is not "
                                  "correct.", parent=self)
             return
@@ -5139,8 +5057,6 @@ class AccountPage(Page):
         self.refresh()
 
     def manage_keys(self):
-        # The hidden key list (Ctrl+Shift+A). Allowed while expired so a new
-        # key can be made and then activated.
         if not self.authorize(allow_locked=True):
             return
         dlg = KeyManagerDialog(self, self.data.key_log)
@@ -5158,6 +5074,7 @@ class AccountPage(Page):
         except (TypeError, ValueError):
             days = 0
         if not 1 <= days <= 60:
+            # Notify
             messagebox.showerror(APP_NAME, "Enter a number of days between "
                                  "1 and 60.", parent=self)
             return
@@ -5192,6 +5109,7 @@ class AccountPage(Page):
     def _selected_name(self):
         selected = self.tree.selection()
         if len(selected) != 1:
+            # Notify
             messagebox.showinfo(APP_NAME, "Select one parent first.",
                                 parent=self)
             return None
@@ -5199,6 +5117,7 @@ class AccountPage(Page):
 
     def add_parent(self):
         if len(self.data.parents) >= self.MAX_PARENTS:
+            # Notify
             messagebox.showinfo(APP_NAME, "Only four accounts can be added.",
                                 parent=self)
             return
@@ -5242,6 +5161,7 @@ class AccountPage(Page):
         name = self._selected_name()
         if name is None or not self.authorize():
             return
+        # Notify
         if messagebox.askyesno(APP_NAME, f"Remove parent '{name}'? They "
                                "will no longer be able to sign in to the "
                                "Web Dashboard.", parent=self):
@@ -5284,10 +5204,6 @@ class AccountPage(Page):
         self._hide_pin()
 
 
-# --------------------------------------------------------------------------
-# Web Dashboard (http://KIDIP:PORT)
-# --------------------------------------------------------------------------
-# What each Web Dashboard role may do (Complete may do everything).
 ROLE_ACTIONS = {"Lite": frozenset({"req_review", "cp_new"}),
                 "Child": frozenset({"new_request", "alerts"})}
 _MOBILE_AGENT = re.compile(
@@ -5494,7 +5410,7 @@ def local_ip():
     """This computer's address on the Wi-Fi / home network."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        s.connect(("10.255.255.255", 1))   # no traffic is actually sent
+        s.connect(("10.255.255.255", 1))
         return s.getsockname()[0]
     except OSError:
         return "127.0.0.1"
@@ -5518,13 +5434,12 @@ class WebDashboard:
         self.app = app
         self.port = port
         self.jobs = queue.Queue()
-        self.sessions = {}                # token -> {"exp": time, "user": name}
-        self.tries = 0                    # wrong sign-in / PIN tries in a row
+        self.sessions = {}
+        self.tries = 0
         self.lock_until = 0.0
         self.lock = threading.Lock()
         self.httpd = None
 
-    # -- server -------------------------------------------------------------
     def start(self):
         """Returns an error message, or None when the server is running."""
         outer = self
@@ -5584,7 +5499,6 @@ class WebDashboard:
             self.httpd.server_close()
             self.httpd = None
 
-    # -- hand-off to the main thread -----------------------------------------
     def _pump(self):
         try:
             while True:
@@ -5599,7 +5513,7 @@ class WebDashboard:
         try:
             self.app.after(100, self._pump)
         except tk.TclError:
-            pass                          # window closed
+            pass
 
     def on_main(self, fn):
         box, done = [], threading.Event()
@@ -5608,7 +5522,6 @@ class WebDashboard:
             return {"ok": False, "msg": "The app is busy. Try again."}
         return box[0]
 
-    # -- sessions ---------------------------------------------------------------
     def valid(self, token):
         """The signed-in username for this token, or None."""
         now = time.time()
@@ -5717,7 +5630,6 @@ class WebDashboard:
         self.app._on_tab_changed()
         return {"ok": True, "msg": msg}
 
-    # -- what the page shows ---------------------------------------------------
     def state(self, full_log=False, role="Complete", user=""):
         d = self.app.data
         d.prune_hidden()
@@ -5769,7 +5681,6 @@ class WebDashboard:
         out["kinds"] = [[k, v] for k, v in REQUEST_KINDS.items()]
         out["time_choices"] = list(TIME_REQUEST_CHOICES)
         if role == "Lite":
-            # Lite only reviews requests and makes coupons.
             keep = ("role", "user", "protect", "pending", "coupons",
                     "n_coupons", "n_pending", "expiry", "days_left",
                     "warn_days", "grace")
@@ -5783,7 +5694,6 @@ class WebDashboard:
             out["log"] = [list(a) for a in d.visible_activity()]
         return out
 
-    # -- what the page can change ----------------------------------------------
     @staticmethod
     def _int(value, low, high, what="a number"):
         try:
@@ -5796,7 +5706,7 @@ class WebDashboard:
 
     def act(self, req, role="Complete", user=""):
         a = req.get("a")
-        allowed = ROLE_ACTIONS.get(role)          # None = everything
+        allowed = ROLE_ACTIONS.get(role)
         if allowed is not None and a not in allowed:
             return {"ok": False, "state": self.state(False, role, user),
                     "msg": "You have to be a parent to change that."
@@ -5813,7 +5723,7 @@ class WebDashboard:
             return {"ok": False, "msg": str(exc),
                     "state": self.state(False, role, user)}
         self.app.update_header()
-        self.app._on_tab_changed()        # keep the desktop window in step
+        self.app._on_tab_changed()
         return {"ok": True, "msg": msg,
                 "state": self.state(False, role, user)}
 
@@ -5980,7 +5890,7 @@ class WebDashboard:
                 e = limits.get(day)
                 minutes = e.get("minutes") if isinstance(e, dict) else None
                 if isinstance(minutes, float) and math.isfinite(minutes):
-                    minutes = int(round(minutes))     # e.g. 0.1 hours
+                    minutes = int(round(minutes))
                 if not (isinstance(e, dict) and isinstance(e.get("enabled"), bool)
                         and type(minutes) is int and 0 <= minutes <= 1440):
                     raise ValueError(f"The limit for {day} must be 24 hours "
@@ -5995,7 +5905,7 @@ class WebDashboard:
             d.limits = new
             d.bedtime = {"enabled": b["enabled"], "start": b["start"].strip(),
                          "end": b["end"].strip()}
-            app.page(TimeLimitsPage).load()   # refresh the desktop tab
+            app.page(TimeLimitsPage).load()
             log("Time limits saved", "All days")
             return "Time limits saved. The screen locks when time runs out or at bedtime."
 
@@ -6043,16 +5953,13 @@ class WebDashboard:
         raise ValueError("Unknown action.")
 
 
-# --------------------------------------------------------------------------
-# Background launcher (runs as SYSTEM, started by the scheduled task)
-# --------------------------------------------------------------------------
-EXIT_PARENT_QUIT = 42       # exit code meaning "a parent closed it with the PIN"
-EXIT_ALREADY_RUNNING = 43   # another copy is already running
-EXIT_SETTINGS_UNREADABLE = 44   # settings exist but this account can't open them
+EXIT_PARENT_QUIT = 42
+EXIT_ALREADY_RUNNING = 43
+EXIT_SETTINGS_UNREADABLE = 44
 NO_SESSION = 0xFFFFFFFF
-RETRY_AFTER_SECONDS = 30    # launcher waits this long after codes 43 / 44
+RETRY_AFTER_SECONDS = 30
 
-_MUTEX_HANDLES = []         # kept so the mutex lives as long as the process
+_MUTEX_HANDLES = []
 
 
 def acquire_single_instance(name):
@@ -6070,10 +5977,10 @@ def acquire_single_instance(name):
         handle = k.CreateMutexW(None, False, name)
         error = ctypes.get_last_error()
     except Exception:
-        return True                       # can't check: don't block startup
+        return True
     if not handle:
-        return error != 5                 # 5 = access denied
-    if error == 183:                      # ERROR_ALREADY_EXISTS
+        return error != 5
+    if error == 183:
         k.CloseHandle(handle)
         return False
     _MUTEX_HANDLES.append(handle)
@@ -6102,31 +6009,13 @@ class _ProcessInfo(ctypes.Structure):
                 ("dwThreadId", ctypes.c_uint32)]
 
 
-# --------------------------------------------------------------------------
-# Setup requests (so setup.py does not need administrator rights)
-# --------------------------------------------------------------------------
-# The settings folder is locked to SYSTEM and administrators. A standard user
-# running setup.py therefore can't save anything there directly. Instead
-# setup.py drops a request file into the "inbox" folder (install.bat makes it
-# write-only for ordinary users: they can create files but not read, list or
-# change anything), and the launcher, which runs as SYSTEM, checks the
-# request and applies it. All the checks happen here, not in setup.py:
-#   * the activation key (always),
-#   * the current PIN when LeafyGreen is already set up (running setup again),
-#   * every value, as if it came from an untrusted file.
-# Wrong keys or PINs lock requests for five minutes after five tries.
-# The answer goes to the "outbox" folder (readable by everyone, writable by
-# SYSTEM only), together with status.json, which says whether setup is done.
-#
-# To change the activation key, put the SHA-256 of the new key here:
-#   py -c "import hashlib;print(hashlib.sha256(b'NEW-KEY').hexdigest())"
 ACTIVATION_KEY_SHA256 = (
     "541e973234cd8ef649600290ebf525a1e0f4ef66e691e9255840b54f4447155e")
 SETUP_MAX_ACCOUNTS = 3
 SETUP_REQUEST_LIMIT = 262144
 SETUP_MAX_TRIES = 5
 SETUP_LOCKOUT_SECONDS = 300
-SETUP_REQUEST_MAX_AGE = 120        # older requests are discarded unread
+SETUP_REQUEST_MAX_AGE = 120
 SETUP_ID = re.compile(r"[0-9a-f]{32}")
 
 
@@ -6181,14 +6070,13 @@ class SetupService:
         self.inbox = os.path.join(self.dir, "inbox")
         self.outbox = os.path.join(self.dir, "outbox")
         self.settings = os.path.join(self.dir, os.path.basename(SETTINGS_FILE))
-        self.stop_app = stop_app            # closes the running app first
+        self.stop_app = stop_app
         self.clock = clock
         self.fails = 0
         self.locked_until = 0.0
         self._status = None
         self._status_at = -1e9
 
-    # -- the checks ----------------------------------------------------------
     def _failed(self, code, message):
         self.fails += 1
         if self.fails >= SETUP_MAX_TRIES:
@@ -6203,7 +6091,7 @@ class SetupService:
         """Answer for one request (a dict). Never raises."""
         try:
             return self._handle(text)
-        except Exception as exc:              # a bad request must not kill us
+        except Exception as exc:
             return {"ok": False, "code": "bad",
                     "message": f"The request could not be processed ({exc})."}
 
@@ -6237,13 +6125,13 @@ class SetupService:
         new, error = build_setup_data(req.get("config"))
         if error:
             return {"ok": False, "code": "invalid", "message": error}
-        new.key_log = list(data.key_log)          # keep the existing key list
+        new.key_log = list(data.key_log)
         new.expiry = expiry
-        if data.key_entry(key) is None:           # built-in key: record it
+        if data.key_entry(key) is None:
             new.key_log.append({"key": Data._key_norm(key), "expiry": expiry,
                                 "recorded": today_str()})
         if self.stop_app:
-            self.stop_app()                   # it would overwrite our file
+            self.stop_app()
         error = Data.write(json.dumps(new.to_dict(), sort_keys=True),
                            self.settings)
         if error:
@@ -6253,7 +6141,6 @@ class SetupService:
         self._status_at = -1e9
         return {"ok": True, "code": "done", "message": "Setup saved."}
 
-    # -- the folders ---------------------------------------------------------
     def _write_json(self, name, obj):
         path = os.path.join(self.outbox, name)
         tmp = path + ".tmp"
@@ -6277,7 +6164,7 @@ class SetupService:
         os.makedirs(self.outbox, exist_ok=True)
         self._refresh_status()
         now = time.time()
-        for name in os.listdir(self.outbox):      # tidy up old answers
+        for name in os.listdir(self.outbox):
             path = os.path.join(self.outbox, name)
             if (name != "status.json" and name.endswith(".json")
                     and now - os.path.getmtime(path) > 120):
@@ -6289,11 +6176,11 @@ class SetupService:
             path = os.path.join(self.inbox, name)
             rid = name[:-5]
             if not name.endswith(".json") or not SETUP_ID.fullmatch(rid):
-                continue                      # not ours: leave it alone
+                continue
             try:
                 age = now - os.path.getmtime(path)
                 if age < 0.7:
-                    continue                  # still being written
+                    continue
                 with open(path, "rb") as f:
                     raw = f.read(SETUP_REQUEST_LIMIT + 1)
             except OSError:
@@ -6311,7 +6198,7 @@ class SetupService:
                 os.remove(path)
             except OSError:
                 pass
-            self._status_at = -1e9            # the status may have changed
+            self._status_at = -1e9
             self._refresh_status()
 
 
@@ -6382,7 +6269,6 @@ class SessionLauncher:
 
     def _session_user(self, sid):
         buf, size = ctypes.c_void_p(), ctypes.c_uint32()
-        # 5 = WTSUserName
         if not self.w.WTSQuerySessionInformationW(
                 None, sid, 5, ctypes.byref(buf), ctypes.byref(size)):
             return ""
@@ -6406,7 +6292,6 @@ class SessionLauncher:
                                   ctypes.byref(token)):
             raise ctypes.WinError(ctypes.get_last_error())
         try:
-            # MAXIMUM_ALLOWED, SecurityImpersonation, TokenPrimary
             if not a.DuplicateTokenEx(token, 0x2000000, None, 2, 1,
                                       ctypes.byref(dup)):
                 raise ctypes.WinError(ctypes.get_last_error())
@@ -6416,8 +6301,6 @@ class SessionLauncher:
         have_env = False
         try:
             session = u32(sid)
-            # 12 = TokenSessionId: move the copied token into the child's
-            # session so the app opens on their screen.
             if not a.SetTokenInformation(dup, 12, ctypes.addressof(session),
                                          ctypes.sizeof(session)):
                 raise ctypes.WinError(ctypes.get_last_error())
@@ -6430,7 +6313,7 @@ class SessionLauncher:
             cmd = ctypes.create_unicode_buffer(self._command())
             ok = a.CreateProcessAsUserW(
                 dup, None, cmd, None, None, False,
-                0x400 if have_env else 0,          # CREATE_UNICODE_ENVIRONMENT
+                0x400 if have_env else 0,
                 env if have_env else None,
                 os.path.dirname(sys.executable), ctypes.byref(info),
                 ctypes.byref(proc))
@@ -6465,7 +6348,7 @@ class SessionLauncher:
                               "file; retrying in 30 seconds")
         sid = k.WTSGetActiveConsoleSessionId()
         if st["quit_sid"] is not None and sid != st["quit_sid"]:
-            st["quit_sid"] = None            # a new sign-in starts it again
+            st["quit_sid"] = None
         if (st["child"] is None and sid != NO_SESSION
                 and sid != st["quit_sid"] and now >= st["wait_until"]
                 and self._session_user(sid).lower() == self.user):
@@ -6489,7 +6372,7 @@ class SessionLauncher:
                 if time.monotonic() - last_cycle >= 3:
                     last_cycle = time.monotonic()
                     self.cycle(st, last_cycle)
-            except Exception as exc:           # keep the launcher alive
+            except Exception as exc:
                 self._log(f"Launcher error: {exc}")
             try:
                 service.poll()
@@ -6498,9 +6381,6 @@ class SessionLauncher:
             time.sleep(1)
 
 
-# --------------------------------------------------------------------------
-# Main window
-# --------------------------------------------------------------------------
 class App(tk.Tk):
     def __init__(self, data=None):
         super().__init__()
@@ -6511,7 +6391,6 @@ class App(tk.Tk):
         apply_style(self)
 
         self.data = data if data is not None else Data.load()
-        # Keep the plain-text key record in the child's folder up to date.
         write_activation_keyfile(self.data.key_log)
         self._status_job = None
         self._last_saved = None
@@ -6519,9 +6398,9 @@ class App(tk.Tk):
         self._last_refresh = 0.0
         self._last_error = None
         self._last_write_error = None
-        self._last_core = None            # settings other than the counters
+        self._last_core = None
         self._last_write_time = -999.0
-        self._step_errors = {}            # per-monitor-step error messages
+        self._step_errors = {}
         self._last_ip_check = -999.0
         self._ip = None
         self.unlocked_until = 0.0
@@ -6530,10 +6409,9 @@ class App(tk.Tk):
         self.web_status = tk.StringVar()
         self.web = None
         self.quit_by_parent = False
-        self.countdown = None             # the "time is almost up" window
+        self.countdown = None
         self.notifier = None
 
-        # Header
         header = ttk.Frame(self, style="Header.TFrame", padding=(20, 14))
         header.pack(fill="x")
         left = ttk.Frame(header, style="Header.TFrame")
@@ -6565,7 +6443,6 @@ class App(tk.Tk):
                   style="HeaderSub.TLabel").grid(row=3, column=0,
                                                  columnspan=3, sticky="e")
 
-        # Status bar (packed before the notebook so it keeps its space)
         bottom = ttk.Frame(self, style="Inner.TFrame")
         bottom.pack(side="bottom", fill="x")
         self.status_var = tk.StringVar(value="Ready")
@@ -6574,7 +6451,6 @@ class App(tk.Tk):
         ttk.Label(bottom, text=f"{APP_NAME} {APP_VERSION}",
                   style="Status.TLabel").pack(side="right")
 
-        # Tabs
         self.nb = ttk.Notebook(self)
         self.nb.pack(fill="both", expand=True, padx=12, pady=(8, 0))
         self.pages = [
@@ -6604,19 +6480,16 @@ class App(tk.Tk):
         for label, page in self.pages:
             self.nb.add(page, text=label)
         self.nb.bind("<<NotebookTabChanged>>", self._on_tab_changed)
-        # Ctrl+Shift+R on the My Account tab: reset everything (PIN needed)
         for seq in ("<Control-Shift-R>", "<Control-Shift-r>"):
             self.bind_all(seq, self._reset_shortcut)
-        # Ctrl+Shift+A on the My Account tab: manage activation keys
         for seq in ("<Control-Shift-A>", "<Control-Shift-a>"):
             self.bind_all(seq, self._keys_shortcut)
 
-        # App blocking engine (Windows only)
         api = None
         if sys.platform == "win32":
             try:
                 api = WindowsProcessApi()
-            except Exception as exc:  # keep the window usable regardless
+            except Exception as exc:
                 self.set_status(f"App blocking could not start: {exc}")
         own_names = {"leafygreen.exe", "snortsecure.exe"}
         if getattr(sys, "frozen", False):
@@ -6633,7 +6506,7 @@ class App(tk.Tk):
             try:
                 idle = InputMonitor().idle_seconds
             except Exception:
-                idle = None               # screen time then counts always
+                idle = None
         media = None
         if idle is not None:
             media = MediaMonitor()
@@ -6653,7 +6526,6 @@ class App(tk.Tk):
         if sys.platform == "win32":
             self.notifier = Notifier(self._window_handle)
 
-        # Web Dashboard
         if WEB_ENABLED:
             self.web = WebDashboard(self, WEB_PORT)
             error = self.web.start()
@@ -6671,15 +6543,15 @@ class App(tk.Tk):
         self.after(200, self.first_run)
         self.after(GUARD_INTERVAL_MS, self._guard_tick)
         if "--minimized" in sys.argv and self.data.pin_hash is not None:
-            self.iconify()                # background start: stay out of the way
+            self.iconify()
         if self.data.load_error:
+            # Notify
             self.after(400, lambda: messagebox.showwarning(
                 APP_NAME, "The saved settings could not be read, so "
                 "LeafyGreen started fresh. The old file was kept as "
                 "settings.json.corrupt in the LeafyGreen data folder "
                 f"({SETTINGS_DIR}).", parent=self))
 
-    # -- background monitor and saving ----------------------------------------
     def _refresh_web_address(self):
         """Keeps the address in the header current (Wi-Fi may come up late
         or change)."""
@@ -6701,28 +6573,25 @@ class App(tk.Tk):
             return self.winfo_id()
 
     def notify(self, text, title=APP_NAME):
-        """A real Windows notification. If Windows won't show one, a small
-        always-on-top window is used instead."""
-        shown = self.notifier is not None and self.notifier.show(title, text)
-        if not shown:
-            self.show_warning(text)
-        return shown
+        try:
+            self.attributes("-topmost", True)
+            self.lift()
+        except tk.TclError:
+            pass
+        try:
+            # Notify
+            messagebox.showinfo(title, text, parent=self)
+        except tk.TclError:
+            # Notify
+            _message_box(text)
+        try:
+            self.attributes("-topmost", False)
+        except tk.TclError:
+            pass
+        return True
 
     def show_warning(self, text):
-        """A small always-on-top heads-up that closes itself."""
-        win = tk.Toplevel(self)
-        win.title(APP_NAME)
-        win.attributes("-topmost", True)
-        win.resizable(False, False)
-        ttk.Label(win, text=text, font=(FONT, 12),
-                  padding=(24, 18)).pack()
-        ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
-        win.update_idletasks()
-        x = win.winfo_screenwidth() - win.winfo_width() - 30
-        y = win.winfo_screenheight() - win.winfo_height() - 90
-        win.geometry(f"+{max(x, 0)}+{max(y, 0)}")
-        win.bell()
-        win.after(20000, lambda: win.winfo_exists() and win.destroy())
+        self.notify(text)
 
     def _guard_tick(self):
         now = time.monotonic()
@@ -6739,8 +6608,6 @@ class App(tk.Tk):
                 self._last_ip_check = now
                 self._refresh_web_address()
 
-        # Each step has its own try/except, so one failing never stops the
-        # others (a bug in website blocking must not stop the time lock).
         def pause_step():
             if self.data.pause_expired(time.time()):
                 self.data.log("Internet resumed", "Timer ended")
@@ -6796,13 +6663,13 @@ class App(tk.Tk):
             return
         idle = self.guard.idle
         if idle is not None and idle() > NOTICE_IDLE_SECONDS:
-            return                        # nobody there: keep it for later
+            return
         lines = [("Approved: " if r["status"] == "Approved" else "Denied: ")
                  + Data.describe_request(r) for r in results[:3]]
         if len(results) > 3:
             lines.append(f"...and {len(results) - 3} more.")
         for r in results:
-            r["told"] = True              # before showing: never twice
+            r["told"] = True
         self.notify("\n".join(lines), "Your requests")
         self.data.log("Request results shown", f"{len(results)} result(s)")
 
@@ -6852,7 +6719,7 @@ class App(tk.Tk):
             self.set_status("Enter the PIN to close LeafyGreen.")
             return
         self._autosave(force=True)
-        if self.pause_guard.active:       # never leave the internet off
+        if self.pause_guard.active:
             self.data.internet_paused = False
             try:
                 self.pause_guard.tick(False, time.monotonic())
@@ -6872,7 +6739,6 @@ class App(tk.Tk):
     def is_protected(self, name):
         return self.guard.is_protected(name)
 
-    # -- PIN handling -------------------------------------------------------
     def is_unlocked(self):
         return time.time() < self.unlocked_until
 
@@ -6911,9 +6777,6 @@ class App(tk.Tk):
         dlg = PinDialog(self, "Create Your PIN",
                         ["Create a 4-digit PIN", "Confirm PIN"], check)
         if not dlg.result:
-            # Stay off until the next sign-in instead of being restarted
-            # every few seconds. (install.bat asks for the PIN, so this
-            # is rarely reached.)
             self.quit_by_parent = True
             self.destroy()
             return
@@ -6928,6 +6791,7 @@ class App(tk.Tk):
         When the subscription has expired everything is locked except
         activating a new key, so most callers are refused until then."""
         if not allow_locked and self.data.settings_locked:
+            # Notify
             messagebox.showwarning(
                 APP_NAME, "The subscription has expired, so settings are "
                 "locked. Activate a new key on the My Account tab to unlock "
@@ -6938,6 +6802,7 @@ class App(tk.Tk):
             self.unlocked_until = time.time() + UNLOCK_SECONDS
             return True
         if time.time() < self.lockout_until:
+            # Notify
             messagebox.showwarning(APP_NAME, self._lockout_message(),
                                    parent=self)
             return False
@@ -6949,13 +6814,13 @@ class App(tk.Tk):
         return True
 
     def _reset_shortcut(self, event=None):
-        if self.grab_current() is not None:       # a dialog is open
+        if self.grab_current() is not None:
             return
         if self.nb.tab(self.nb.select(), "text") == "My Account":
             self.reset_everything()
 
     def _keys_shortcut(self, event=None):
-        if self.grab_current() is not None:       # a dialog is open
+        if self.grab_current() is not None:
             return
         if self.nb.tab(self.nb.select(), "text") == "My Account":
             self.page(AccountPage).manage_keys()
@@ -6964,15 +6829,17 @@ class App(tk.Tk):
         """Ctrl+Shift+R: asks for the PIN, then asks if they are sure, then
         puts everything back to how it was when first installed."""
         if time.time() < self.lockout_until:
+            # Notify
             messagebox.showwarning(APP_NAME, self._lockout_message(),
                                    parent=self)
             return
-        if self.data.pin_hash is not None:        # always asks, even if
-            dlg = PinDialog(self, "Enter PIN",    # recently unlocked
+        if self.data.pin_hash is not None:
+            dlg = PinDialog(self, "Enter PIN",
                             ["Enter your 4-digit PIN"],
                             lambda v: self._verify(v[0]))
             if not dlg.result:
                 return
+        # Notify
         if not messagebox.askyesno(
                 APP_NAME, "Are you sure you want to reset everything?\n\n"
                 "This removes the PIN, all Web Dashboard accounts, time "
@@ -6986,7 +6853,7 @@ class App(tk.Tk):
     def factory_reset(self):
         fresh = Data()
         fresh.protection_enabled = False
-        fresh.setup_done = self.data.setup_done   # stays activated
+        fresh.setup_done = self.data.setup_done
         self.data.__dict__.update(fresh.__dict__)
         self.unlocked_until = 0.0
         self.failed_tries = 0
@@ -7000,7 +6867,7 @@ class App(tk.Tk):
         self.update_header()
         self._tick(reschedule=False)
         self._on_tab_changed()
-        self.first_run()                          # asks for a new PIN
+        self.first_run()
         if not self.quit_by_parent:
             self.set_status("Everything was reset. Protection is OFF: turn "
                             "it on with the shield on the Dashboard.")
@@ -7142,7 +7009,7 @@ def main():
         SessionLauncher(user).run()
         return
 
-    background = "--minimized" in args    # started by the launcher
+    background = "--minimized" in args
     global CHILD_USER
     if "--child" in args:
         try:
@@ -7151,23 +7018,20 @@ def main():
             CHILD_USER = None
     if not acquire_single_instance("Global\\LeafyGreen"):
         if not background:
+            # Notify
             _message_box("LeafyGreen is already running. Only one copy "
                          "can run at a time; open it from the taskbar.")
         sys.exit(EXIT_ALREADY_RUNNING)
     data = Data.load()
     if data.unreadable:
-        # Never start fresh over a file that exists but can't be opened:
-        # that would forget the PIN and settings. (This is what a standard
-        # account sees if it runs the program itself.)
         if not background:
+            # Notify
             _message_box("LeafyGreen can't open its settings, so it will "
                          "not start. It is meant to run from the startup "
                          "task that install.bat sets up, not by opening the "
                          "program directly.")
         sys.exit(EXIT_SETTINGS_UNREADABLE)
     if not data.setup_done:
-        # setup.py has not been completed: show the red shield and stop
-        # here. Nothing is blocked or watched until setup is finished.
         SetupNeededWindow().mainloop()
         sys.exit(0)
     app = App(data)
