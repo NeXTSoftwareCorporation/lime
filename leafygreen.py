@@ -5265,7 +5265,6 @@ footer{background:#fff;padding:6px 14px;color:var(--mu);position:sticky;bottom:0
 <header><div><div class="t"><b>LeafyGreen</b></div><div class="s">Parental Controls</div></div><div class="s" id="hs"></div></header>
 <div id="app"></div><footer id="st">Ready</footer>
 <script>
-if((navigator.userAgentData&&navigator.userAgentData.mobile)||(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<=820)){if(!/[?&]m=1/.test(location.search))location.replace('/?m=1')}
 let tok=sessionStorage.getItem('t'),S=null,tab='Dashboard',popNext=false,hidOpen=false,reqOpen=false,lf={day:'',hour:'',res:'',q:'',sort:'Newest first'};
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TABS=['Dashboard','Time Limits','Always Blocked','Always Allowed','Limited Apps','Extra Time Coupons','Log'];
@@ -5462,11 +5461,7 @@ class WebDashboard:
             def do_GET(self):
                 path, _, query = self.path.partition("?")
                 if path in ("/", "/index.html"):
-                    mobile = (is_mobile_agent(self.headers.get("User-Agent", ""))
-                              or "m=1" in query.split("&"))
-                    self._send(200, (MOBILE_PAGE if mobile
-                                     else WEB_PAGE).encode("utf-8"),
-                               "text/html")
+                    self._send(200, WEB_PAGE.encode("utf-8"), "text/html")
                 else:
                     self._send(404, {"ok": False})
 
