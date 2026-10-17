@@ -6573,6 +6573,27 @@ class App(tk.Tk):
             return self.winfo_id()
 
     def notify(self, text, title=APP_NAME):
+        shown = self.notifier is not None and self.notifier.show(title, text)
+        if not shown:
+            self.show_warning(text)
+        return shown
+
+    def show_warning(self, text):
+        win = tk.Toplevel(self)
+        win.title(APP_NAME)
+        win.attributes("-topmost", True)
+        win.resizable(False, False)
+        ttk.Label(win, text=text, font=(FONT, 12),
+                  padding=(24, 18)).pack()
+        ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
+        win.update_idletasks()
+        x = win.winfo_screenwidth() - win.winfo_width() - 30
+        y = win.winfo_screenheight() - win.winfo_height() - 90
+        win.geometry(f"+{max(x, 0)}+{max(y, 0)}")
+        win.bell()
+        win.after(20000, lambda: win.winfo_exists() and win.destroy())
+
+    def notify_box(self, text, title=APP_NAME):
         try:
             self.attributes("-topmost", True)
             self.lift()
@@ -6588,10 +6609,6 @@ class App(tk.Tk):
             self.attributes("-topmost", False)
         except tk.TclError:
             pass
-        return True
-
-    def show_warning(self, text):
-        self.notify(text)
 
     def _guard_tick(self):
         now = time.monotonic()
@@ -6670,7 +6687,7 @@ class App(tk.Tk):
             lines.append(f"...and {len(results) - 3} more.")
         for r in results:
             r["told"] = True
-        self.notify("\n".join(lines), "Your requests")
+        self.notify_box("\n".join(lines), "Your requests")
         self.data.log("Request results shown", f"{len(results)} result(s)")
 
     def ask_parent(self):
