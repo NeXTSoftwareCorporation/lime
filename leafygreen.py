@@ -5107,7 +5107,10 @@ class AccountPage(Page):
     def manage_keys(self):
         if not self.authorize(allow_locked=True):
             return
-        dlg = KeyManagerDialog(self, self.data.key_log)
+        existing = Data.clean_key_entries(
+            list(self.data.key_log)
+            + read_activation_keyfile(activation_keyfile_path()))
+        dlg = KeyManagerDialog(self, existing)
         if dlg.result is None:
             return
         self.data.set_key_list(dlg.result)
