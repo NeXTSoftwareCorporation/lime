@@ -681,16 +681,15 @@ class Data:
 
     def validate_activation(self, key):
         """Decide whether `key` may be used to activate. Returns
-        (ok, expiry, error). A key counts if it is in the key list and not
-        past its end date; the built-in key always works as a fallback."""
+        (ok, expiry, error). A key counts only if it is in the key list
+        (from activation_keys.txt / the Ctrl+Shift+A manager) and not past
+        its end date."""
         entry = self.key_entry(key)
-        if entry is not None:
-            if self._expiry_ok(entry.get("expiry", "")):
-                return True, str(entry.get("expiry", "")), None
-            return False, None, "That key is in the list but has expired."
-        if activation_key_ok(key):
-            return True, "", None
-        return False, None, "That key is not in the key list."
+        if entry is None:
+            return False, None, "That key is not in the key list."
+        if self._expiry_ok(entry.get("expiry", "")):
+            return True, str(entry.get("expiry", "")), None
+        return False, None, "That key is in the list but has expired."
 
     def activate(self, key):
         """Turn the subscription on with `key`. Returns (ok, error). On
@@ -699,10 +698,6 @@ class Data:
         ok, expiry, error = self.validate_activation(key)
         if not ok:
             return False, error
-        if self.key_entry(key) is None:
-            self.key_log.append({"key": self._key_norm(key), "expiry": expiry,
-                                  "recorded": today_str()})
-            self.key_log = self.key_log[-50:]
         self.expiry = expiry
         write_activation_keyfile(self.key_log)
         return True, None
@@ -3081,8 +3076,8 @@ class RoleDialog(Dialog):
 
 
 class ActivateKeyDialog(Dialog):
-    """Enter a key to activate. It must be in the key list and not expired
-    (the built-in key always works). result = the key string."""
+    """Enter a key to activate. It must be in the key list and not expired.
+    result = the key string."""
     ok_text = "Activate"
 
     def __init__(self, parent, data):
@@ -6049,19 +6044,12 @@ class _ProcessInfo(ctypes.Structure):
                 ("dwThreadId", ctypes.c_uint32)]
 
 
-ACTIVATION_KEY_SHA256 = (
-    "541e973234cd8ef649600290ebf525a1e0f4ef66e691e9255840b54f4447155e")
 SETUP_MAX_ACCOUNTS = 3
 SETUP_REQUEST_LIMIT = 262144
 SETUP_MAX_TRIES = 5
 SETUP_LOCKOUT_SECONDS = 300
 SETUP_REQUEST_MAX_AGE = 120
 SETUP_ID = re.compile(r"[0-9a-f]{32}")
-
-
-def activation_key_ok(text):
-    digest = hashlib.sha256(str(text).strip().encode("utf-8")).hexdigest()
-    return secrets.compare_digest(digest, ACTIVATION_KEY_SHA256)
 
 
 def build_setup_data(cfg):
@@ -6172,9 +6160,6 @@ class SetupService:
             return {"ok": False, "code": "invalid", "message": error}
         new.key_log = list(seeded)
         new.expiry = expiry
-        if probe.key_entry(key) is None:
-            new.key_log.append({"key": Data._key_norm(key), "expiry": expiry,
-                                "recorded": today_str()})
         if self.stop_app:
             self.stop_app()
         error = Data.write(json.dumps(new.to_dict(), sort_keys=True),
