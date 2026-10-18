@@ -1,15 +1,17 @@
 # LeafyGreen activation keys
 #
-# List the activation keys LeafyGreen will accept, one per line, in the form:
+# PUT THIS FILE HERE BEFORE YOU INSTALL:
+#     C:\Users\<Child>\leafygreen\activation_keys.txt
+# (replace <Child> with the child's Windows account name). Setup reads the
+# keys from the child's own folder, not from next to setup.py.
+#
+# List the activation keys LeafyGreen will accept, one per line:
 #     KEY, YYYY-MM-DD
 # The date is when that key expires. Use the word  never  for a key with no
 # end date. Lines starting with # are ignored.
 #
-# Keep this file next to setup.py when you run the installer: setup reads the
-# keys from here so you have something to type on the Activation step. After
-# setup you can add, edit or remove keys any time with Ctrl+Shift+A on the
-# My Account tab (the app keeps this file up to date in the child's folder,
-# C:\Users\<Child>\leafygreen\activation_keys.txt).
+# After setup you can add, edit or remove keys any time with Ctrl+Shift+A on
+# the My Account tab; the app keeps this same file up to date.
 #
 # ---- Replace the examples below with your own keys ----
 

@@ -1893,6 +1893,14 @@ def child_home():
     return os.path.expanduser("~")
 
 
+def keyfile_for_user(user):
+    """The activation_keys.txt path in a named account's folder
+    (C:\\Users\\<user>\\leafygreen\\activation_keys.txt)."""
+    base = os.path.join(os.environ.get("SystemDrive", "C:") + "\\",
+                        "Users", str(user or ""))
+    return os.path.join(base, "leafygreen", "activation_keys.txt")
+
+
 def _doh_json(host, rtype):
     url = (f"{SMARTSAFE_DOH_URL}?name={urllib.parse.quote(host)}"
            f"&type={rtype}")
@@ -6093,13 +6101,15 @@ def build_setup_data(cfg):
 class SetupService:
     """Runs in the launcher (SYSTEM). poll() answers requests in the inbox."""
 
-    def __init__(self, stop_app=None, directory=None, clock=time.monotonic):
+    def __init__(self, stop_app=None, directory=None, clock=time.monotonic,
+                 child_user=None):
         self.dir = directory or SETTINGS_DIR
         self.inbox = os.path.join(self.dir, "inbox")
         self.outbox = os.path.join(self.dir, "outbox")
         self.settings = os.path.join(self.dir, os.path.basename(SETTINGS_FILE))
         self.stop_app = stop_app
         self.clock = clock
+        self.child_user = child_user
         self.fails = 0
         self.locked_until = 0.0
         self._status = None
@@ -6148,7 +6158,9 @@ class SetupService:
             return {"ok": True, "code": "ok", "setup_done": data.setup_done}
         key = str(req.get("key") or "")
         cfg = req.get("config") if isinstance(req.get("config"), dict) else {}
-        seeded = Data.clean_key_entries(list(data.key_log)
+        file_keys = (read_activation_keyfile(keyfile_for_user(self.child_user))
+                     if self.child_user else [])
+        seeded = Data.clean_key_entries(list(data.key_log) + file_keys
                                         + (cfg.get("keys") or []))
         probe = Data()
         probe.key_log = seeded
@@ -6395,7 +6407,8 @@ class SessionLauncher:
     def run(self):
         st = {"child": None, "child_sid": None, "quit_sid": None,
               "wait_until": 0.0}
-        service = SetupService(stop_app=lambda: self._stop_app(st))
+        service = SetupService(stop_app=lambda: self._stop_app(st),
+                               child_user=self.user)
         last_cycle = 0.0
         while True:
             try:
@@ -6421,7 +6434,8 @@ class App(tk.Tk):
         apply_style(self)
 
         self.data = data if data is not None else Data.load()
-        write_activation_keyfile(self.data.key_log)
+        if self.data.key_log:
+            write_activation_keyfile(self.data.key_log)
         self._status_job = None
         self._last_saved = None
         self._last_save_check = 0.0
