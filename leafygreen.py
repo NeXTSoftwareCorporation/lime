@@ -210,20 +210,25 @@ def activation_keyfile_path():
     return os.path.join(child_home(), "leafygreen", "activation_keys.txt")
 
 
+KEYFILE_HEADER = (
+    "# LeafyGreen activation keys\n"
+    "# One key per line:   KEY, YYYY-MM-DD\n"
+    "# Use the word  never  for a key that has no end date.\n"
+    "# Lines starting with # are ignored.\n"
+    "#\n"
+    "# Example:\n"
+    "#   LEAFY-2026-AA01, 2027-10-18\n"
+    "#   LEAFY-2026-AA02, never\n")
+
+
 def write_activation_keyfile(key_log):
-    """Write the human-readable record of every activated key and when it
-    expires. Best effort: a failure here never stops activation."""
+    """Write the activation keys to the record file in the same simple format
+    the setup reader understands. Best effort: a failure never stops
+    activation."""
     path = activation_keyfile_path()
-    lines = ["LeafyGreen - activation keys", "=" * 36, ""]
-    if not key_log:
-        lines.append("No activation key recorded yet.")
+    lines = [KEYFILE_HEADER]
     for rec in key_log:
-        lines.append(f"Activation key : {rec.get('key', '')}")
-        lines.append(f"Expires on     : {rec.get('expiry') or '(no end date)'}")
-        lines.append(f"Recorded       : {rec.get('recorded', '')}")
-        lines.append("")
-    lines.append("Renew with a new key and activate it on the My Account tab "
-                 "in the LeafyGreen window.")
+        lines.append(f"{rec.get('key', '')}, {rec.get('expiry') or 'never'}")
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
@@ -231,6 +236,41 @@ def write_activation_keyfile(key_log):
     except OSError:
         pass
     return path
+
+
+def parse_activation_keys(text):
+    """Turn the text of an activation_keys.txt into [{"key","expiry"}].
+    Blank lines and lines starting with # are ignored; "never"/empty means no
+    end date; a line with an unreadable date is skipped."""
+    out = []
+    for raw in str(text).splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, _, rest = line.partition(",")
+        key = key.strip()
+        if not key:
+            continue
+        exp = rest.strip()
+        if exp.lower() in ("", "never", "none", "no end date"):
+            expiry = ""
+        else:
+            try:
+                datetime.date.fromisoformat(exp)
+            except ValueError:
+                continue
+            expiry = exp
+        out.append({"key": key, "expiry": expiry})
+    return out
+
+
+def read_activation_keyfile(path):
+    """Parse an activation_keys.txt file, or [] if it cannot be read."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            return parse_activation_keys(f.read())
+    except OSError:
+        return []
 
 
 def split_stamp(stamp):
@@ -667,19 +707,24 @@ class Data:
         write_activation_keyfile(self.key_log)
         return True, None
 
-    def set_key_list(self, entries):
-        """Replace the key list (from the Ctrl+Shift+A manager) and refresh
-        the record file. `entries` is a list of {"key", "expiry"}."""
-        clean = []
-        seen = set()
-        for e in entries:
-            key = self._key_norm(e.get("key"))
+    @staticmethod
+    def clean_key_entries(entries):
+        clean, seen = [], set()
+        for e in entries or []:
+            if not isinstance(e, dict):
+                continue
+            key = Data._key_norm(e.get("key"))
             if not key or key in seen:
                 continue
             seen.add(key)
             clean.append({"key": key, "expiry": str(e.get("expiry", "")),
                           "recorded": str(e.get("recorded") or today_str())})
-        self.key_log = clean[-50:]
+        return clean[-50:]
+
+    def set_key_list(self, entries):
+        """Replace the key list (from the Ctrl+Shift+A manager) and refresh
+        the record file. `entries` is a list of {"key", "expiry"}."""
+        self.key_log = Data.clean_key_entries(entries)
         write_activation_keyfile(self.key_log)
 
     def _hash(self, pin):
@@ -6114,15 +6159,20 @@ class SetupService:
             self.fails = 0
             return {"ok": True, "code": "ok", "setup_done": data.setup_done}
         key = str(req.get("key") or "")
-        ok, expiry, kerr = data.validate_activation(key)
+        cfg = req.get("config") if isinstance(req.get("config"), dict) else {}
+        seeded = Data.clean_key_entries(list(data.key_log)
+                                        + (cfg.get("keys") or []))
+        probe = Data()
+        probe.key_log = seeded
+        ok, expiry, kerr = probe.validate_activation(key)
         if not ok:
             return self._failed("key", kerr or "That key is not correct.")
         new, error = build_setup_data(req.get("config"))
         if error:
             return {"ok": False, "code": "invalid", "message": error}
-        new.key_log = list(data.key_log)
+        new.key_log = list(seeded)
         new.expiry = expiry
-        if data.key_entry(key) is None:
+        if probe.key_entry(key) is None:
             new.key_log.append({"key": Data._key_norm(key), "expiry": expiry,
                                 "recorded": today_str()})
         if self.stop_app:

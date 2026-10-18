@@ -1,0 +1,17 @@
+# LeafyGreen activation keys
+#
+# List the activation keys LeafyGreen will accept, one per line, in the form:
+#     KEY, YYYY-MM-DD
+# The date is when that key expires. Use the word  never  for a key with no
+# end date. Lines starting with # are ignored.
+#
+# Keep this file next to setup.py when you run the installer: setup reads the
+# keys from here so you have something to type on the Activation step. After
+# setup you can add, edit or remove keys any time with Ctrl+Shift+A on the
+# My Account tab (the app keeps this file up to date in the child's folder,
+# C:\Users\<Child>\leafygreen\activation_keys.txt).
+#
+# ---- Replace the examples below with your own keys ----
+
+LEAFY-2026-AA01, 2027-10-18
+LEAFY-2026-AA02, never

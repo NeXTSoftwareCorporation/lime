@@ -14,7 +14,7 @@ create the background task), then walks through the five setup steps:
 
 Run it again later and it offers to redo the setup (PIN needed) or to
 uninstall LeafyGreen. Keep this file in the same folder as leafygreen.py,
-install.bat and uninstall.bat.
+install.bat, uninstall.bat and activation_keys.txt (the keys setup accepts).
 """
 import ctypes
 import json
@@ -252,9 +252,12 @@ class SetupApp(tk.Tk):
         self.key_label = tk.Label(card, textvariable=self.key_msg, bg="white",
                                   fg=lg.RED, font=(lg.FONT, 10, "bold"))
         self.key_label.pack(anchor="w")
-        ttk.Label(card, text="It looks like LEAFY-0000-AA00 and must be "
-                  "typed exactly.", style="CardText.TLabel").pack(
-            anchor="w", pady=(8, 0))
+        ttk.Label(card, text="Type one of the keys listed in "
+                  "activation_keys.txt (in this folder), exactly as written. "
+                  "You can add more keys and end dates later with Ctrl+Shift+A "
+                  "on the My Account tab.", style="CardText.TLabel",
+                  wraplength=560, justify="left").pack(anchor="w",
+                                                       pady=(8, 0))
         self.after(200, self.key_entry.focus_set)
 
     def _check_key(self):
@@ -718,13 +721,16 @@ class SetupApp(tk.Tk):
             self.next_btn.state(["!disabled"])
 
     def config(self):
+        keys = lg.read_activation_keyfile(
+            os.path.join(HERE, "activation_keys.txt"))
         return {"limits": self.limits, "bedtime": self.bedtime,
                 "allowed": [list(r) for r in self.allowed],
                 "blocked": [list(r) for r in self.blocked],
                 "limited": [dict(a) for a in self.limited],
                 "accounts": [{"username": n, "password": p, "role": r}
                              for n, p, r in self.accounts],
-                "new_pin": self.pin1.get()}
+                "new_pin": self.pin1.get(),
+                "keys": keys}
 
     def finish(self):
         payload = {"type": "setup", "key": self.key_var.get().strip(),
