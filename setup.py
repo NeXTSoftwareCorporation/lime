@@ -28,7 +28,10 @@ import tkinter as tk
 import uuid
 from tkinter import messagebox, simpledialog, ttk
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+if getattr(sys, "frozen", False):
+    HERE = os.path.dirname(sys.executable)
+else:
+    HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 STEPS = ("1  Activation", "2  Screen Time", "3  Websites & Apps",
