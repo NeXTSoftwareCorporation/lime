@@ -66,7 +66,20 @@ class Backend:
         self.direct = lg.SetupService()
 
     def installed(self):
-        return os.path.isdir(self.inbox)
+        # Prefer the SYSTEM service whenever LeafyGreen is installed. Checking
+        # the inbox can fail silently (the data folder is locked to SYSTEM and
+        # administrators), which would wrongly send us down the in-process
+        # path and try to read the locked settings here. The Program Files
+        # exe is readable by everyone, so use it as the reliable signal.
+        try:
+            if os.path.isdir(self.inbox):
+                return True
+        except OSError:
+            pass
+        try:
+            return os.path.exists(install_exe())
+        except OSError:
+            return False
 
     def setup_done(self):
         """True if LeafyGreen was already set up, False if not, None if
