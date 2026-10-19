@@ -6183,6 +6183,10 @@ class SetupService:
         probe.key_log = seeded
         ok, expiry, kerr = probe.validate_activation(key)
         if not ok:
+            if not seeded:
+                kerr = ("No activation keys were found. Put your keys in "
+                        "activation_keys.txt in the child's leafygreen folder "
+                        "(C:\\Users\\<Child>\\leafygreen\\), then try again.")
             return self._failed("key", kerr or "That key is not correct.")
         new, error = build_setup_data(req.get("config"))
         if error:
