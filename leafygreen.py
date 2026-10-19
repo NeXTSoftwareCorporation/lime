@@ -998,23 +998,33 @@ class Data:
     @classmethod
     def load(cls, path=SETTINGS_FILE):
         data = cls()
-        try:
-            with open(path, encoding="utf-8") as f:
-                raw = json.load(f)
-            if not isinstance(raw, dict):
-                raise ValueError("unexpected file contents")
-        except FileNotFoundError:
-            raw = None
-        except ValueError as exc:
-            raw = None
-            data.load_error = str(exc)
+        raw = None
+        last_os_error = None
+        for attempt in range(6):
+            last_os_error = None
             try:
-                os.replace(path, path + ".corrupt")
-            except OSError:
-                pass
-        except OSError as exc:
-            raw = None
-            data.unreadable = str(exc)
+                with open(path, encoding="utf-8") as f:
+                    raw = json.load(f)
+                if not isinstance(raw, dict):
+                    raise ValueError("unexpected file contents")
+                break
+            except FileNotFoundError:
+                raw = None
+                break
+            except ValueError as exc:
+                raw = None
+                data.load_error = str(exc)
+                try:
+                    os.replace(path, path + ".corrupt")
+                except OSError:
+                    pass
+                break
+            except OSError as exc:
+                raw = None
+                last_os_error = str(exc)
+                time.sleep(0.15)
+        if last_os_error is not None:
+            data.unreadable = last_os_error
         if raw is not None:
             data._apply(raw)
         data.roll_day()
@@ -6153,7 +6163,11 @@ class SetupService:
         data = Data.load(self.settings)
         if data.unreadable:
             return {"ok": False, "code": "unreadable", "message":
-                    "LeafyGreen's settings file could not be read."}
+                    "LeafyGreen's settings file could not be read. Restart "
+                    "the computer and try setup again. If it keeps happening, "
+                    "a locked settings file is left over from a previous "
+                    "install: run uninstall.bat (choose to delete the saved "
+                    "settings when asked), then install again."}
         if data.setup_done and not data.check_pin(str(req.get("pin") or "")):
             return self._failed("pin", "That PIN is not correct.")
         if req["type"] == "check_pin":
