@@ -270,10 +270,7 @@ class SetupApp(tk.Tk):
         self.key_label = tk.Label(card, textvariable=self.key_msg, bg="white",
                                   fg=lg.RED, font=(lg.FONT, 10, "bold"))
         self.key_label.pack(anchor="w")
-        ttk.Label(card, text="Type one of the keys listed in the child's "
-                  "activation_keys.txt (C:\\Users\\<Child>\\leafygreen\\), "
-                  "exactly as written. You can add more keys and end dates "
-                  "later with Ctrl+Shift+A on the My Account tab.",
+        ttk.Label(card, text="Type your activation key exactly as given.",
                   style="CardText.TLabel", wraplength=560,
                   justify="left").pack(anchor="w", pady=(8, 0))
         self.after(200, self.key_entry.focus_set)

@@ -221,18 +221,34 @@ KEYFILE_HEADER = (
     "#   LEAFY-2026-AA02, never\n")
 
 
+def _hide_path(path):
+    """Mark a file or folder Hidden on Windows (best effort, never raises)."""
+    if sys.platform != "win32":
+        return
+    try:
+        ctypes.windll.kernel32.SetFileAttributesW(str(path), 0x02)
+    except Exception:
+        pass
+
+
 def write_activation_keyfile(key_log):
     """Write the activation keys to the record file in the same simple format
-    the setup reader understands. Best effort: a failure never stops
-    activation."""
+    the setup reader understands, then hide it so it does not show in the
+    child's folder. Best effort: a failure never stops activation. Writes via
+    a temp file + replace so overwriting the hidden file does not fail."""
     path = activation_keyfile_path()
     lines = [KEYFILE_HEADER]
     for rec in key_log:
         lines.append(f"{rec.get('key', '')}, {rec.get('expiry') or 'never'}")
     try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
+        folder = os.path.dirname(path)
+        os.makedirs(folder, exist_ok=True)
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
+        os.replace(tmp, path)
+        _hide_path(path)
+        _hide_path(folder)
     except OSError:
         pass
     return path
@@ -5076,9 +5092,7 @@ class AccountPage(Page):
         ttk.Label(sub, textvariable=self.sub_status, style="CardBody.TLabel",
                   wraplength=860, justify="left").pack(anchor="w",
                                                        pady=(2, 8))
-        ttk.Label(sub, text="Protection stays on until the key expires. "
-                  "A record of your keys and their end dates is saved in the "
-                  "leafygreen folder in the child's user folder.",
+        ttk.Label(sub, text="Protection stays on until the key expires.",
                   style="CardText.TLabel", wraplength=860,
                   justify="left").pack(anchor="w", pady=(0, 10))
         warn = ttk.Frame(sub, style="Inner.TFrame")
@@ -6184,10 +6198,10 @@ class SetupService:
         ok, expiry, kerr = probe.validate_activation(key)
         if not ok:
             if not seeded:
-                kerr = ("No activation keys were found. Put your keys in "
-                        "activation_keys.txt in the child's leafygreen folder "
-                        "(C:\\Users\\<Child>\\leafygreen\\), then try again.")
-            return self._failed("key", kerr or "That key is not correct.")
+                kerr = "No activation key is available. Contact the administrator."
+            else:
+                kerr = "That activation key is not correct."
+            return self._failed("key", kerr)
         new, error = build_setup_data(req.get("config"))
         if error:
             return {"ok": False, "code": "invalid", "message": error}
