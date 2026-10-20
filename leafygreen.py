@@ -5109,8 +5109,8 @@ class AccountPage(Page):
                    command=self.renew).pack(anchor="w")
 
     def renew(self):
-        if not self.authorize(allow_locked=True):
-            return
+        # Activation keys are managed only here, on the local LeafyGreen
+        # window, and deliberately without the parental PIN.
         dlg = ActivateKeyDialog(self, self.data)
         if not dlg.result:
             return
@@ -5129,8 +5129,7 @@ class AccountPage(Page):
         self.refresh()
 
     def manage_keys(self):
-        if not self.authorize(allow_locked=True):
-            return
+        # Ctrl+Shift+A on the local LeafyGreen window, no parental PIN.
         existing = Data.clean_key_entries(
             list(self.data.key_log)
             + read_activation_keyfile(activation_keyfile_path()))
